@@ -3,7 +3,7 @@
     <div>
       <logo/>
       <h1 class="title">
-        NewMacher
+       Hellow New Macher!
       </h1>
       <h2 class="subtitle">
         New Macher Jobs
