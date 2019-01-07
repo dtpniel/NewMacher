@@ -1,7 +1,7 @@
 <template>
   <div>
     <span>Category:{{category}}</span>
-
+<span>hi bye</span>
     <results/>
   </div>
 
