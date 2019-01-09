@@ -65,6 +65,7 @@ module.exports = {
     // Doc: https://bootstrap-vue.js.org/docs/
     ['bootstrap-vue/nuxt', { css: false }],
   ],
+  serverMiddleware: ['~/api/index.js'],
   /*
   ** Axios module configuration
   */
@@ -80,6 +81,7 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
+   
     plugins: [
       new webpack.ProvidePlugin({
         '$': 'jquery',
@@ -87,8 +89,10 @@ module.exports = {
         'window.jQuery': 'jquery'
       })],
     extractCSS: true,
-    extend(config, ctx) {
-
+    extend(config, options) {
+      return Object.assign({}, config, {
+        devtool: 'source-map'
+      })
     }
   }
 }
