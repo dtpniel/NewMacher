@@ -35,7 +35,7 @@
 //     }
 // };
 exports.database = {
-    server: 'LAPTOP-51JRGRIP\SQLEXPRESS',
+    server: 'localhost',
     database: 'Macher',
     user: 'sa',
     password: 'ramot27',

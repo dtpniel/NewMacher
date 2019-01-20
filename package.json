@@ -9,13 +9,16 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "dev-debug": "node --inspect node_modules/.bin/nuxt"
+    "dev-debug": "node --inspect node_modules/nuxt/bin/nuxt",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
     "bootstrap-vue": "^2.0.0-beta",
     "cross-env": "^5.2.0",
     "jquery": "^3.3.1",
+    "moment": "^2.23.0",
     "mssql": "^4.3.0",
     "nuxt": "^2.3.4"
   },

@@ -3,6 +3,10 @@ import webpack from 'webpack'
 
 module.exports = {
   mode: 'universal',
+  env: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+    baseApi: 'http://localhost:3000' + "/api"
+  },
   router: {
     base: '/'
   },
@@ -34,10 +38,9 @@ module.exports = {
       { src: '/js/counterup.min.js' },
       { src: '/js/magnific-popup.min.js' },
       { src: '/js/slick.min.js' },
-      { src: '/js/custom.js' }  
-      ]
+      { src: '/js/custom.js' }
+    ]
   },
-
   /*
   ** Customize the progress-bar color
   */
@@ -52,8 +55,7 @@ module.exports = {
   */
 
   plugins: [
-
-
+    '~plugins/filters.js'
   ],
 
   /*
@@ -81,7 +83,7 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-   
+
     plugins: [
       new webpack.ProvidePlugin({
         '$': 'jquery',
@@ -89,10 +91,16 @@ module.exports = {
         'window.jQuery': 'jquery'
       })],
     extractCSS: true,
-    extend(config, options) {
-      return Object.assign({}, config, {
-        devtool: 'source-map'
-      })
+    extend (config, { isClient }) {
+      // config.devtool = 'source-map'
+      // return Object.assign({}, config, {
+      //   devtool: 'source-map'
+      // })
+      if (isClient)
+      config.devtool = 'eval-source-map'
+    else
+      config.devtool = "inline-source-map"
+      
     }
   }
 }

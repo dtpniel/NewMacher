@@ -1,15 +1,15 @@
 <template>
   <div>
     <span>Category:{{category}}</span>
-<span>hi bye</span>
-    <results/>
+    
+    <results v-bind:jobs="jobs"/>
   </div>
-
 </template>
 
 <script>
 import Route from "vue-router";
 import results from "~/components/Results.vue";
+import axios from "axios";
 
 export default {
   data: function() {
@@ -19,6 +19,20 @@ export default {
   },
   components: {
     results
+  },
+  asyncData({ req, params }) {
+
+    // We can return a Promise instead of calling the callback
+    return axios
+      .get(process.env.baseApi + "/jobs")
+      .then(res => {
+        return {
+          jobs: res.data[0]
+        };
+      })
+      .catch(e => {
+        // error({ statusCode: 404, message: "Post not found" });
+      });
   },
   head() {
     return {

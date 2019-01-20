@@ -12,10 +12,20 @@
             "args": ["dev"],
             "cwd": "${workspaceRoot}",
             "sourceMaps": true,
+      
             "env": {
                 "NODE_ENV": "development",
                 "DEBUG": "nuxt:*,app"
             }
+            
+          },
+          {
+            
+                "type": "node",
+                "request": "attach",
+                "name": "Attach to Nuxt",
+                "port": 9229
+              
           }
     ]
   }

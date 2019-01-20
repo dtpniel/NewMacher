@@ -7,14 +7,11 @@ const db = require('./db');
 app.get('/jobs', function (req, res) {
 
   // query to the database and get the data
-  db.execProcedure('getJobs', null, function (err, recordset) {
-
-    if (err)
-      console.log(err)
-
-    // send data as a response
-    res.send(recordset);
-  });
+  db.execProcedure('getJobs').then(data => {
+    res.send(data.data.recordsets)
+  },
+    error => console.log(error)
+  )
 });
 
 
