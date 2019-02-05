@@ -7,8 +7,10 @@ Vue.filter('formatDate', function (value) {
         return moment(String(value)).format('MM/DD/YYYY')
     }
 });
-Vue.filter('truncate', function (text, stop, clamp='') {
+Vue.filter('truncate', function (text, stop, clamp = '') {
 
+    if (!text)
+        return '';
     var separator = ' ';
     if (text.length <= stop) return text;
     return text.substr(0, text.lastIndexOf(separator, stop)) + clamp;

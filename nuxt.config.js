@@ -30,9 +30,11 @@ module.exports = {
     script: [
       { src: '/js/jquery-3.3.1.min.js' },
       { src: '/js/jquery-migrate-3.0.0.min.js' },
+      { src: '/js/mmenu.min.js' },
       { src: '/js/tippy.all.min.js' },
       { src: '/js/simplebar.min.js' },
       { src: '/js/bootstrap-slider.min.js' },
+      { src: '/js/bootstrap-select.min.js' },
       { src: '/js/snackbar.js' },
       { src: '/js/clipboard.min.js' },
       { src: '/js/counterup.min.js' },

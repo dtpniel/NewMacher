@@ -1,14 +1,20 @@
 <template>
   <div>
-    <span>Category:{{category}}</span>
-    
-    <results v-bind:jobs="jobs"/>
+    <div class="margin-top-90"></div>
+
+    <!-- filter -->
+    <!-- <div class="col-xl-3 col-lg-4">
+      <jobs-filter v-bind:data="data"/>
+    </div>-->
+    <!-- results -->
+    <results v-bind:jobsData="jobsData"/>
   </div>
 </template>
 
 <script>
 import Route from "vue-router";
 import results from "~/components/Results.vue";
+// import jobsFilter from "~/components/Filter.vue";
 import axios from "axios";
 
 export default {
@@ -24,10 +30,10 @@ export default {
 
     // We can return a Promise instead of calling the callback
     return axios
-      .get(process.env.baseApi + "/jobs")
+      .post(process.env.baseApi + "/jobs")
       .then(res => {
         return {
-          jobs: res.data[0]
+          jobsData: res.data
         };
       })
       .catch(e => {

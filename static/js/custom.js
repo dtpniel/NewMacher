@@ -21,12 +21,13 @@ $(document).ready(function(){
 
 				$(".mmenu-init").mmenu({
 				 	"counters": true
-				}, {
-				 // configuration
-				 offCanvas: {
-				    pageNodetype: "#wrapper"
+				// }, {
+				//  // configuration
+				//  offCanvas: {
+				//     pageNodetype: "body"
+				//  }
 				 }
-				});
+				);
 
 				var mmenuAPI = $(".mmenu-init").data( "mmenu" );
 				var $icon = $(".mmenu-trigger .hamburger");

@@ -1,6 +1,5 @@
 <template>
 
-<body>
 
 <!-- Wrapper -->
 <div id="wrapper">
@@ -25,7 +24,7 @@
 				<nav id="navigation">
 					<ul id="responsive">
 
-						<li><a href="#" class="current">Home</a>
+						<li><a href="#">Home</a>
 							<ul class="dropdown-nav">
 								<li><a href="index.html">Home 1</a></li>
 								<li><a href="index-2.html">Home 2</a></li>
@@ -33,7 +32,7 @@
 							</ul>
 						</li>
 
-						<li><a href="#">Find Work</a>
+						<li><a href="#" class="current">Find Work</a>
 							<ul class="dropdown-nav">
 								<li><a href="#">Browse Jobs</a>
 									<ul class="dropdown-nav">
@@ -327,7 +326,10 @@
 <div class="clearfix"></div>
 <!-- Header Container / End -->
 
-<nuxt/>
+<!-- Page Content
+================================================== -->
+<nuxt />
+
 
 <!-- Footer
 ================================================== -->
@@ -491,12 +493,4 @@
 <!-- Wrapper / End -->
 
 
-<!-- Scripts
-================================================== -->
-
-<!-- Snackbar // documentation: https://www.polonel.com/snackbar/ -->
-
-</body>
-
-	
 </template>
