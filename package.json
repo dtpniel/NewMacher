@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
+    "@ttskch/select2-bootstrap4-theme": "^1.0.5",
+    "@types/select2": "^4.0.47",
     "body-parser": "^1.18.3",
+    "bootstrap-select": "^1.12.4",
     "bootstrap-vue": "^2.0.0-beta",
     "cross-env": "^5.2.0",
     "jquery": "^3.3.1",
@@ -24,7 +27,6 @@
     "nuxt": "^2.3.4"
   },
   "devDependencies": {
-    "@types/bootstrap-select": "^1.11.1",
     "nodemon": "^1.11.0"
   }
 }

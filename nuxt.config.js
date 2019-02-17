@@ -23,8 +23,7 @@ module.exports = {
     link: [
 
       { rel: 'stylesheet', href: '/css/style.css' },
-      { rel: 'stylesheet', href: '/css/colors/blue.css' }
-
+      { rel: 'stylesheet', href: '/css/colors/blue.css' },
     ],
     // ,
     script: [
@@ -34,7 +33,8 @@ module.exports = {
       { src: '/js/tippy.all.min.js' },
       { src: '/js/simplebar.min.js' },
       { src: '/js/bootstrap-slider.min.js' },
-      { src: '/js/bootstrap-select.min.js' },
+      //{ src: '/js/bootstrap-select.min.js' },
+      //{ src: '/node_modules/vue-bootstrap-selectpicker/dist/js/vue-bootstrap-selectpicker.js' },
       { src: '/js/snackbar.js' },
       { src: '/js/clipboard.min.js' },
       { src: '/js/counterup.min.js' },
@@ -46,7 +46,7 @@ module.exports = {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: "~/components/Loading.vue",
 
   /*
   ** Global CSS
@@ -58,6 +58,7 @@ module.exports = {
 
   plugins: [
     '~plugins/filters.js'
+    //   { src: '~plugins/vue-select', ssr: false }
   ],
 
   /*
@@ -67,7 +68,7 @@ module.exports = {
     // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
     // Doc: https://bootstrap-vue.js.org/docs/
-    ['bootstrap-vue/nuxt', { css: false }],
+    ['bootstrap-vue/nuxt', { css: false }]
   ],
   serverMiddleware: ['~/api/index.js'],
   /*
@@ -85,24 +86,28 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-
     plugins: [
       new webpack.ProvidePlugin({
         '$': 'jquery',
         'jQuery': 'jquery',
         'window.jQuery': 'jquery'
-      })],
+      })
+      // ,
+      // new webpack.ProvidePlugin({
+      //   'select': 'bootstrap-select'
+      // })
+    ],
     extractCSS: true,
-    extend (config, { isClient }) {
+    extend(config, { isClient }) {
       // config.devtool = 'source-map'
       // return Object.assign({}, config, {
       //   devtool: 'source-map'
       // })
       if (isClient)
-      config.devtool = 'eval-source-map'
-    else
-      config.devtool = "inline-source-map"
-      
+        config.devtool = 'eval-source-map'
+      else
+        config.devtool = "inline-source-map"
+
     }
   }
 }

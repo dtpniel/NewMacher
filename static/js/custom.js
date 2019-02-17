@@ -810,22 +810,25 @@ $(document).ready(function(){
 		});
 
 		// add via button
-		$('.keyword-input-button').on('click', function(){ 
-			if((keywordInput.val()!=="")){
-				addKeyword();
-			}
-		});
+
+		//diti
+		// $('.keyword-input-button').on('click', function(){ 
+		// 	if((keywordInput.val()!=="")){
+		// 		addKeyword();
+		// 	}
+		// });
 
 		// removing keyword
-		$(document).on("click",".keyword-remove", function(){
-			$(this).parent().addClass('keyword-removed');
+		//diti
+		// $(document).on("click",".keyword-remove", function(){
+		// 	$(this).parent().addClass('keyword-removed');
 
-			function removeFromMarkup(){
-			  $(".keyword-removed").remove();
-			}
-			setTimeout(removeFromMarkup, 500);
-			keywordsList.css({'height':'auto'}).height();
-		});
+		// 	function removeFromMarkup(){
+		// 	  $(".keyword-removed").remove();
+		// 	}
+		// 	setTimeout(removeFromMarkup, 500);
+		// 	keywordsList.css({'height':'auto'}).height();
+		// });
 
 
 		// animating container height
