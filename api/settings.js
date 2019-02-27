@@ -35,6 +35,12 @@
 //     }
 // };
 exports.database = {
+    // server: '184.94.218.178',
+    // database: 'Macher',
+    // user: 'sa',
+    // password: 'j4234NBerH98233432',
+    // port: 1433
+
     server: 'localhost',
     database: 'Macher',
     user: 'sa',

@@ -7,7 +7,7 @@
       <jobs-filter v-bind:data="data"/>
     </div>-->
     <!-- results -->
-    <jobs-list v-bind:data="data"/>
+    <jobs-list :data="data"/>
   </div>
 </template>
 

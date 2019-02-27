@@ -21,9 +21,8 @@ module.exports = {
       { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
-
       { rel: 'stylesheet', href: '/css/style.css' },
-      { rel: 'stylesheet', href: '/css/colors/blue.css' },
+      { rel: 'stylesheet', href: '/css/colors/blue.css' }
     ],
     // ,
     script: [
