@@ -22,7 +22,9 @@ module.exports = {
     ],
     link: [
       { rel: 'stylesheet', href: '/css/style.css' },
-      { rel: 'stylesheet', href: '/css/colors/blue.css' }
+      { rel: 'stylesheet', href: '/css/colors/blue.css' },
+      { rel: 'stylesheet', href: '/css/modal.css' },
+      { rel: 'stylesheet', href: '/css/bootstrap-fs-modal.min.css' }
     ],
     // ,
     script: [
@@ -39,7 +41,11 @@ module.exports = {
       { src: '/js/counterup.min.js' },
       { src: '/js/magnific-popup.min.js' },
       { src: '/js/slick.min.js' },
-      { src: '/js/custom.js' }
+      { src: '/js/custom.1.js' },
+      { src: '/js/popper.min.js' },
+      { src: '/js/util.js' },
+      { src: '/js/modal.js' }
+
     ]
   },
   /*

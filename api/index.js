@@ -9,11 +9,16 @@ app.use(bodyParser.json())
 app.post('/jobs', function (req, res) {
   // var userInput = [];
   var filter = req.body["filter"];
-  if (filter && filter.cityId)
-    filter.cityId = filter.cityId.join(",");
-  if (filter && filter.categoryId)
-    filter.categoryId = filter.categoryId.join(",");
-
+  if (filter) {
+    if (filter.cityId)
+      filter.cityId = filter.cityId.join(",");
+    if (filter.categoryId)
+      filter.categoryId = filter.categoryId.join(",");
+    if (filter.sortBy.value) {
+      filter.sortBy = "da_" + filter.sortBy.value + " " + filter.sortBy.direction;
+    }
+    else filter.sortBy = "";
+  }
   // query to the database and get the data
   db.execProcedure('getJobs', filter).then(data => {
     res.send(data)

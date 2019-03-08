@@ -7,13 +7,14 @@
       <jobs-filter v-bind:data="data"/>
     </div>-->
     <!-- results -->
-    <jobs-list :data="data"/>
+    <jobs-list/>
   </div>
 </template>
 
 <script>
 import Route from "vue-router";
 import JobsList from "~/components/Jobslist.vue";
+
 // import jobsFilter from "~/components/Filter.vue";
 import axios from "axios";
 
@@ -26,19 +27,20 @@ export default {
   components: {
     JobsList
   },
-  asyncData({ req, params }) {
+  async  fetch({ store, params }) {
     // We can return a Promise instead of calling the callback
-    return axios
-      .post(process.env.baseApi + "/jobs")
-      .then(res => {
-        return {
-          //  debugger
-          data: res.data.data.recordsets
-        };
-      })
-      .catch(e => {
-        // error({ statusCode: 404, message: "Post not found" });
-      });
+    // return axios
+    //   .post(process.env.baseApi + "/jobs")
+    //   .then(res => {
+    //     return {
+    //       //  debugger
+    //       data: res.data.data.recordsets
+    //     };
+    //   })
+    //   .catch(e => {
+    //     // error({ statusCode: 404, message: "Post not found" });
+    //   });
+    await store.dispatch("jobs/getJobs");
   },
   head() {
     return {
