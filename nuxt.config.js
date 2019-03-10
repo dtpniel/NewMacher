@@ -24,7 +24,7 @@ module.exports = {
       { rel: 'stylesheet', href: '/css/style.css' },
       { rel: 'stylesheet', href: '/css/colors/blue.css' },
       { rel: 'stylesheet', href: '/css/modal.css' },
-      { rel: 'stylesheet', href: '/css/bootstrap-fs-modal.min.css' }
+      { rel: 'stylesheet', href: '/css/bootstrap-fs-modal.css' }
     ],
     // ,
     script: [
@@ -62,7 +62,8 @@ module.exports = {
   */
 
   plugins: [
-    '~plugins/filters.js'
+    '~plugins/filters.js',
+    '~plugins/mixins.js'
     //   { src: '~plugins/vue-select', ssr: false }
   ],
 

@@ -6,6 +6,7 @@
     margin: 0;
     height: 100%;
     max-width: 100%;
+    padding-right:0 !important;
   }
   .modal.modal-fullscreen .modal-dialog .modal-content, .bootstrap-fs-modal .modal .modal-dialog .modal-content {
     border-style: none;

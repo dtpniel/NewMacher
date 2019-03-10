@@ -8,16 +8,19 @@
         role="dialog"
         aria-labelledby="modalBottomLabel"
         aria-hidden="true"
+        v-if="isMobile()"
       >
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="modalBottomLabel">Fine Results</h5>
+              <h5 class="modal-title" id="modalBottomLabel">Refine Results</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">Hi Diti</div>
+            <div class="modal-body">
+              <jobs-filter v-if="isMobile()"/>
+            </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               <button type="button" class="btn btn-default">
@@ -39,7 +42,7 @@
 
       <!-- filter -->
       <div class="col-xl-3 col-lg-4">
-        <jobs-filter/>
+        <jobs-filter v-if="!isMobile()"/>
       </div>
 
       <!-- results -->
@@ -67,7 +70,8 @@
           class="button ripple-effect"
           data-toggle="modal"
           data-target="#modalBottom"
-        >Fine Results</button>
+          v-if="isMobile()"
+        >Refine Results</button>
         <!-- results -->
         <jobs-results/>
       </div>
@@ -100,7 +104,7 @@ export default {
   methods: {
     sort: function($event) {
       var id = $event.target.value;
-      sortBy = this.sortByList.find(x => x.id == id);
+      var sortBy = this.sortByList.find(x => x.id == id);
       this.$store.commit("jobs/setFilter", { sortBy });
     },
 

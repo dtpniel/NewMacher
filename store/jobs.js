@@ -47,63 +47,70 @@ export const state = () => ({
     {
       name: "stateId",
       multiple: false,
-      server: false,
+      server: true,
       resetSubCategory: true,
       subCategory: "cityId"
     },
     {
       name: "cityId",
       multiple: true,
-      server: true,
+      server: false,
       resetSubCategory: false,
       subCategory: ""
     },
     {
       name: "mainCategoryId",
       multiple: false,
-      server: false,
+      server: true,
       resetSubCategory: true,
       subCategory: "categoryId"
     },
     {
       name: "categoryId",
       multiple: true,
-      server: true,
+      server: false,
       resetSubCategory: false,
       subCategory: ""
     },
     {
       name: "freelance",
       multiple: false,
-      server: true,
+      server: false,
       resetSubCategory: false,
       subCategory: ""
     },
     {
       name: "partTime",
       multiple: false,
-      server: true,
+      server: false,
+      resetSubCategory: false,
+      subCategory: ""
+    },
+    {
+      name: "internship",
+      multiple: false,
+      server: false,
       resetSubCategory: false,
       subCategory: ""
     },
     {
       name: "temporary",
       multiple: false,
-      server: true,
+      server: false,
       resetSubCategory: false,
       subCategory: ""
     },
     {
       name: "fromHome",
       multiple: false,
-      server: true,
+      server: false,
       resetSubCategory: false,
       subCategory: ""
     },
     {
       name: "freeText",
       multiple: false,
-      server: false,
+      server: true,
       resetSubCategory: false,
       subCategory: ""
     }],
@@ -153,13 +160,16 @@ export const getters = {
             filter.cityId.indexOf(x.cityId) > -1) &&
           (filter.categoryId.length == 0 ||
             filter.categoryId.indexOf(x.categoryId) > -1) &&
-          filter.freelance == x.freelance &&
-          filter.fullTime == x.fullTime &&
-          filter.partTime == x.partTime &&
-          filter.fromHome == x.fromHome &&
-          filter.internship == x.internship &&
-          filter.temporary == x.temporary
-        );
+          (
+            //no job type defined, bring all 
+            !(filter.freelance || filter.fullTime || filter.partTime || filter.fromHome || filter.internship || filter.temporary) ||
+            (filter.freelance == x.freelance && filter.freelance) ||
+            (filter.partTime == x.partTime && filter.partTime) ||
+            (filter.fromHome == x.fromHome && filter.fromHome) ||
+            (filter.internship == x.internship && filter.internship) ||
+            (filter.temporary == x.temporary && filter.temporary)
+
+          ));
       })
       .sort((a, b) => {
         var direction = state.filter.sortBy.direction;
@@ -184,26 +194,23 @@ export const getters = {
 
 export const actions = {
 
-  async getJobs({ commit }) {
+  async getJobs({ commit, state }) {
+    if (process.browser)
+      window.$nuxt.$root.$loading.start();
+
     return axios.post(process.env.baseApi + "/jobs", { filter: state.filter })
-      .then(jobs => { commit("setJobs", jobs.data) }
+      .then(jobs => {
+        commit("setJobs", jobs.data);
+        if (process.browser)
+          window.$nuxt.$root.$loading.finish();
+
+      }
       )
   },
-  async resetFilter({ mutations }) {
-    mutations.resetFilter(state)
-  }
-  // async getJobsClient() {
-  //   return new Promise((resolve, reject) => {
-  //     return getters.filteredJobs();
-  //   });
-  // },
 
-  // async getJobs({dispatch}) {
-  //   if (client)
-  //     return dispatch("getJobsClient");
-  //   else
-  //     return dispatch("getJobsServer")
-  // },
+  async resetFilter({ commit }) {
+    commit("resetFilter")
+  }
 }
 export default {
   namespaced: true,

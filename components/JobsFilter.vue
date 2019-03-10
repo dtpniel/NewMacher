@@ -147,8 +147,8 @@ import { createNamespacedHelpers } from "vuex";
 import { mapMutations, mapActions, mapState } from "vuex";
 import { createHelpers } from "vuex-map-fields";
 const { mapFields } = createHelpers({
-  getterType: "jobs/getFilter",
-  mutationType: "jobs/updateFilter"
+  getterType: "getFilter",
+  mutationType: "updateFilter"
 });
 
 export default {
@@ -168,23 +168,24 @@ export default {
       categoryIdData: state => state.categoryIdData,
       freelanceData: state => state.freelanceData,
       fromHomeData: state => state.fromHomeData,
-      fromHomeData: state => state.fromHomeData,
+      partTimeData: state => state.partTimeData,
       internshipData: state => state.internshipData,
-      temporaryData: state => state.temporaryData
-    })
+      temporaryData: state => state.temporaryData,
+      filterDefinition: state => state.filterDefinition
+    }),
+    ...mapFields("jobs", [
+      "stateId",
+      "cityId",
+      "mainCategoryId",
+      "categoryId",
+      "freelance",
+      "partTime",
+      "temporary",
+      "fromHome",
+      "internship",
+      "freeText"
+    ])
   },
-  ...mapFields({
-    stateId: "filter.stateId",
-    cityId: "filter.cityId",
-    mainCategoryId: "filter.mainCategoryId",
-    categoryId: "filter.categoryId",
-    freelance: "filter.freelance",
-    partTime: "filter.partTime",
-    temporary: "filter.temporary",
-    fromHome: "filter.fromHome",
-    internship: "filter.internship",
-    freeText: "filter.freeText"
-  }),
 
   components: {
     FilteredItems
@@ -193,20 +194,30 @@ export default {
   methods: {
     removeFilterItem: function(item) {
       var arr = this.filteredItems;
-
+      var name = item.name;
       //remove filter item
       const index = arr.findIndex(x => x.id == item.id && x.name == item.name);
       if (index > -1) arr.splice(index, 1);
 
       //remove filter id
-      var filter = this.filter[item.name];
-      if (filter.constructor == Array) {
-        const i = filter.findIndex(x => x == item.id);
-        if (i > -1) filter.splice(i, 1);
-      } else if (filter.constructor == Number) {
-        this.filter[item.name] = 0;
+      var filterItem = this[item.name];
+      if (filterItem.constructor == Array) {
+        {
+          const i = filterItem.findIndex(x => x == item.id);
+          if (i > -1) {
+            var newFilterItem = filterItem.slice();
+            newFilterItem.splice(i, 1);
+            this.updateFilter({ [name]: newFilterItem });
+          }
+        }
+      } else if (filterItem.constructor == Number) {
+        {
+          this.updateFilter({ [name]: 0 });
+        }
       } else {
-        this.filter[item.name] = "";
+        {
+          this.updateFilter({ [name]: "" });
+        }
       }
 
       //search again based on new filter
@@ -241,14 +252,14 @@ export default {
 
     addFilterItem: function(filterItemDef) {
       if (!filterItemDef.multiple) {
-        var id = this.filter[filterItemDef.name];
+        var id = this[filterItemDef.name];
         var arr = this.filteredItems;
         //remove existing filter item
         this.filteredItems = arr.filter(x => x.name !== filterItemDef.name);
 
         this.addSingleFilterItem(id, filterItemDef.name);
       } else {
-        var ids = this.filter[filterItemDef.name];
+        var ids = this[filterItemDef.name];
         var arr = this.filteredItems.filter(x => x.name == filterItemDef.name);
 
         ids.forEach(id => {
@@ -272,7 +283,7 @@ export default {
 
       //reset sub category id and city id when main category or state is selected
       if (filterItemDef.resetSubCategory) {
-        this.filter[filterItemDef.subCategory] = [];
+        this[filterItemDef.subCategory] = [];
         var item = this.filterDefinition.find(
           x => x.name == filterItemDef.subCategory
         );
@@ -281,13 +292,14 @@ export default {
 
       this.addFilterItem(filterItemDef);
       if (filterItemDef.server) {
-        search();
+        this.search();
       }
     },
-    ...mapActions({
-      search: "search",
+    ...mapActions("jobs", {
+      search: "getJobs",
       resetFilter: "resetFilter"
-    })
+    }),
+    ...mapMutations("jobs", { updateFilter: "setFilter" })
   },
 
   updated: function() {
