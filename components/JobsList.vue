@@ -19,21 +19,12 @@
               </button>
             </div>
             <div class="modal-body">
-              <jobs-filter v-if="isMobile()"/>
+              <jobs-filter-mobile v-if="isMobile()"/>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-default">
-                <span class="d-none d-md-inline">Save changes</span>
-                <span class="d-md-none">Save</span>
-              </button>
-              <button type="button" class="btn btn-default">
-                <span class="d-none d-md-inline">Discard changes</span>
-                <span class="d-md-none">Discard</span>
-              </button>
-              <button type="button" class="btn btn-default">
-                <span class="d-none d-md-inline">Reload Data</span>
-                <span class="d-md-none">Reload</span>
+              <button type="button" class="btn btn-default" id="btnSave" @click="serach()">
+                <span class="d-none d-md-inline">Show Results</span>
+                <span class="d-md-none">Show Results</span>
               </button>
             </div>
           </div>
@@ -47,7 +38,7 @@
 
       <!-- results -->
       <div class="col-xl-9 col-lg-8 content-left-offset">
-        <h3 class="page-title">Search Results</h3>
+        <h3 class="page-title">Search Results ({{sum}})</h3>
         <div class="notify-box margin-top-15">
           <div class="switch-container">
             <label class="switch">
@@ -80,14 +71,16 @@
 </template>
 <script>
 import axios from "axios";
-//import $ from "jquery";
 import JobsResults from "~/components/JobsResults";
 import JobsFilter from "~/components/JobsFilter";
+import JobsFilterMobile from "~/components/JobsFilterMobile";
+import { mapGetters } from "vuex";
 
 export default {
   name: "JobsList",
   components: {
     JobsFilter,
+    JobsFilterMobile,
     JobsResults
   },
   data: function() {
@@ -97,8 +90,14 @@ export default {
         { value: "type", direction: "desc", name: "Relevance", id: 1 },
         { value: "date", direction: "desc", name: "Newest", id: 2 },
         { value: "date", direction: "asc", name: "Oldest", id: 3 }
-      ]
+      ],
+      initialFilter: {}
     };
+  },
+  computed: {
+    ...mapGetters({
+      sum: "jobs/sum"
+    })
   },
 
   methods: {
@@ -107,10 +106,20 @@ export default {
       var sortBy = this.sortByList.find(x => x.id == id);
       this.$store.commit("jobs/setFilter", { sortBy });
     },
-
+    serach: function() {
+      this.$store.dispatch("jobs/getJobsMobile");
+    },
     errorCaptured: function(error) {
       console.log(error);
     }
+    // discard: function() {
+    //   this.$store.commit("jobs/setFilter", this.initialFilter);
+    // },
+    // saveInitialFilter: function() {
+    //   //store intialfilter to perform discard on mobile filter
+    //   var initialFilter = this.$store.state.jobs.filter;
+    //   Object.assign(this.initialFilter, initialFilter);
+    // }
   },
 
   mounted() {

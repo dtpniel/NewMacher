@@ -7,13 +7,18 @@
     >No results match your search criteria</div>
 
     <!-- Job Listing -->
-    <a v-for="item in jobs" :key="item.id" href="single-job-page.html" class="job-listing">
+    <a
+      v-for="item in jobs"
+      :key="item.id"
+      :href="'single-job-page.html?id=' + item.id"
+      class="job-listing"
+    >
       <!-- <a href="single-job-page.html" class="job-listing"> -->
       <!-- Job Listing Details -->
       <div class="job-listing-details">
         <!-- Logo -->
         <div class="job-listing-company-logo">
-          <img src="images/company-logo-01.png" alt>
+          <img src="images/no-company3.png" alt>
         </div>
 
         <!-- Details -->
@@ -56,12 +61,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 export default {
   name: "JobsResults",
   computed: {
-   ...mapGetters({
-     jobs: 'jobs/filteredJobs'
+    ...mapGetters({
+      jobs: "jobs/filteredJobsSliced"
     })
   }
 };

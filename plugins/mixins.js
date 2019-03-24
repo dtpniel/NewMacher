@@ -10,7 +10,7 @@ Vue.mixin({
         else
           return false;
       }
-      return true;
+      return false;
     }
   }
 })

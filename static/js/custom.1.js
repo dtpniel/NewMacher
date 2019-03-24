@@ -1298,8 +1298,7 @@ function initialCustom() {
 		fixedContentPos: false
 	});
 
-	$('#btnTestSaveSmall, #btnTestSaveLarge, #btnTestSaveTextButtons, #btnTestSaveFAButtons').on('click', function () {
-		alert('Clicked save button #' + this.id);
+	$('#btnCancel, #btnSave').on('click', function () {
 		$(this).parents('.modal').modal('hide');
 	});
 	$('#btnTestRefreshSmall, #btnTestRefreshTextButtons').on('click', function () {

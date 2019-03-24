@@ -1,18 +1,19 @@
 
 import axios from 'axios'
 import { getField, updateField } from 'vuex-map-fields';
+import { loadavg } from 'os';
 
 var dataIndex = {
   jobs: 0,
   states: 1,
   cities: 2,
   mainCategories: 3,
-  categories: 4
+  categories: 4,
+  mainCategorySEO: 5,
+  categorySEO: 6,
+  stateSEO: 7,
+  citySEO: 8
 };
-
-
-
-
 
 export const state = () => ({
   jobs: [],
@@ -124,17 +125,75 @@ export const state = () => ({
   partTimeData: [{ name: "Part Time", id: 1 }],
   internshipData: [{ name: "Internship", id: 1 }],
   temporaryData: [{ name: "Temporary", id: 1 }],
+  metaTags: {
+    title: "Jewish Jobs on Macher: The Largest Jewish Classifieds Website in the US",
+    description: "The largest jewish jobs website in NYC, Brooklyn, Boro Park, Five Towns, Crown Heights, Woodmere, Monsey, Lakewood and more.",
+    socialTitle: "",
+    socialDescription: "",
+    canonical: ""
+  }
 });
 
 export const mutations = {
   setJobs(state, data) {
-    var results = data.data.recordsets;
-    state.jobs = results[dataIndex.jobs];
-    state.stateIdData = results[dataIndex.states];
-    state.cityIdData = results[dataIndex.cities];
-    state.mainCategoryIdData = results[dataIndex.mainCategories];
-    state.categoryIdData = results[dataIndex.categories];
+    state.jobs = data;
   },
+  setStateData(state, data) {
+    state.stateIdData = data;
+  },
+  setCityData(state, data) {
+    state.cityIdData = data;
+  },
+  setMainCategoryData(state, data) {
+    state.mainCategoryIdData = data;
+  },
+  setCategoryData(state, data) {
+    state.categoryIdData = data;
+  },
+
+  setMetaTags(state, data) {
+    var title;
+    var description;
+    var location = "";
+
+    var mainCategory = data[dataIndex.mainCategorySEO];
+    if (mainCategory[0]) {
+      title = mainCategory[0].title;
+      description = mainCategory[0].description;
+    }
+
+    var categroy = data[dataIndex.categorySEO];
+    if (categroy[0]) {
+      title = categroy[0].title;
+      description = categroy[0].description;
+    }
+
+    var stateUS = data[dataIndex.stateSEO]
+    if (stateUS[0]) {
+      location = " in " + stateUS[0].title;
+    }
+
+    var city = data[dataIndex.citySEO]
+    if (city[0]) {
+      location = " in " + city[0].title;
+    }
+
+    if (!title)
+      return;
+
+    state.title = "Jewish " + title + " Jobs" + location + " on Macher";
+    state.description = "Search here for thousands of jewish jobs - "
+      + description + location +
+      " and more on Macher, the largest jewish classifieds website";
+    state.socialTitle = title + " Jobs";
+    state.socialDescription = description + " jobs";
+    state.canonical = "";
+  },
+
+  setMetaTags(state, metaTags) {
+    state.metaTags = Object.assign({}, state.metaTags, metaTags);
+  },
+
 
   setFilter(state, filter) {
     state.filter = Object.assign({}, state.filter, filter)
@@ -151,6 +210,7 @@ export const mutations = {
 };
 
 export const getters = {
+
   filteredJobs: state => {
     var filter = state.filter;
     return state.jobs
@@ -161,7 +221,7 @@ export const getters = {
           (filter.categoryId.length == 0 ||
             filter.categoryId.indexOf(x.categoryId) > -1) &&
           (
-            //no job type defined, bring all 
+            //no job type defined, take all 
             !(filter.freelance || filter.fullTime || filter.partTime || filter.fromHome || filter.internship || filter.temporary) ||
             (filter.freelance == x.freelance && filter.freelance) ||
             (filter.partTime == x.partTime && filter.partTime) ||
@@ -182,30 +242,103 @@ export const getters = {
         else return new Date(a.date) - new Date(b.date);
       }
       )
-      .slice(filter.start, filter.max);
   },
-
+  filteredJobsSliced: (state, getters) => {
+    return getters.filteredJobs.slice(state.filter.start, state.filter.max);
+  },
 
   getFilter: state => {
     return getField(state.filter)
-  }
+  },
+  sum: (state, getters) => { return getters.filteredJobs.length }
 };
 
 
 export const actions = {
 
   async getJobs({ commit, state }) {
-    if (process.browser)
-      window.$nuxt.$root.$loading.start();
-
     return axios.post(process.env.baseApi + "/jobs", { filter: state.filter })
       .then(jobs => {
-        commit("setJobs", jobs.data);
-        if (process.browser)
-          window.$nuxt.$root.$loading.finish();
-
+        var data = jobs.data.data.recordsets;
+        commit("setJobs", data[dataIndex.jobs]);
+        commit("setStateData", data[dataIndex.states]);
+        commit("setCityData", data[dataIndex.cities]);
+        commit("setMainCategoryData", data[dataIndex.mainCategories]);
+        commit("setCategoryData", data[dataIndex.categories]);
       }
       )
+  },
+
+  async getJobsMobile({ commit, state }) {
+    return axios.post(process.env.baseApi + "/jobsMobile", { filter: state.filter })
+      .then(jobs => {
+        var data = jobs.data.data.recordsets;
+        commit("setJobs", data[dataIndex.jobs]);
+      }
+      )
+  },
+
+  async getJobsQueryString({ commit, dispatch }, qstring) {
+    return axios.post(process.env.baseApi + "/jobsQueryString", qstring)
+      .then(jobs => {
+        var data = jobs.data.data.recordsets;
+        commit("setJobs", data[dataIndex.jobs]);
+        commit("setStateData", data[dataIndex.states]);
+        commit("setCityData", data[dataIndex.cities]);
+        commit("setMainCategoryData", data[dataIndex.mainCategories]);
+        commit("setCategoryData", data[dataIndex.categories]);
+        dispatch("setMetaTags", data);
+      }
+      )
+  },
+
+  setMetaTags({ commit, rootState }, data) {
+    var metaTags = {
+      title: "", description: "", socialTitle: "", socialDescription: "", canonical: ""
+    };
+
+    var title;
+    var description;
+    var location = "";
+
+    var mainCategory = data[dataIndex.mainCategorySEO];
+    if (mainCategory[0]) {
+      title = mainCategory[0].title;
+      description = mainCategory[0].description;
+      commit("setFilter", { mainCategoryId: mainCategory[0].mainCategoryId });
+    }
+
+    var category = data[dataIndex.categorySEO];
+    if (category[0]) {
+      title = category[0].title;
+      description = category[0].description;
+      commit("setFilter", { categoryId: [category[0].categoryId] });
+    }
+
+    var stateUS = data[dataIndex.stateSEO]
+    if (stateUS[0]) {
+      location = " in " + stateUS[0].title;
+      commit("setFilter", { stateId: stateUS[0].stateId });
+    }
+
+    var city = data[dataIndex.citySEO]
+    if (city[0]) {
+      location = " in " + city[0].title;
+      commit("setFilter", { cityId: [city[0].cityId] });
+    }
+
+    if (!title)
+      return;
+
+    metaTags.title = "Jewish " + title + " Jobs" + location + " on Macher";
+    metaTags.description = "Search here for thousands of jewish jobs - "
+      + description + location +
+      " and more on Macher, the largest jewish classifieds website";
+    metaTags.socialTitle = title + "Jobs";
+    metaTags.socialDescription = description + "Jobs";
+    metaTags.canonical = "";
+
+    commit("setMetaTags", metaTags);
   },
 
   async resetFilter({ commit }) {

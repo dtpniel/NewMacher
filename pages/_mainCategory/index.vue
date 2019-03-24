@@ -1,12 +1,6 @@
 <template>
   <div>
     <div class="margin-top-90"></div>
-
-    <!-- filter -->
-    <!-- <div class="col-xl-3 col-lg-4">
-      <jobs-filter v-bind:data="data"/>
-    </div>-->
-    <!-- results -->
     <jobs-list/>
   </div>
 </template>
@@ -15,42 +9,38 @@
 import Route from "vue-router";
 import JobsList from "~/components/Jobslist.vue";
 
-// import jobsFilter from "~/components/Filter.vue";
 import axios from "axios";
 
 export default {
   data: function() {
     return {
-      category: this.$route.params.category
+      mainCategory: this.$route.params.mainCategory
     };
   },
+
   components: {
     JobsList
   },
-  async  fetch({ store, params }) {
-    // We can return a Promise instead of calling the callback
-    // return axios
-    //   .post(process.env.baseApi + "/jobs")
-    //   .then(res => {
-    //     return {
-    //       //  debugger
-    //       data: res.data.data.recordsets
-    //     };
-    //   })
-    //   .catch(e => {
-    //     // error({ statusCode: 404, message: "Post not found" });
-    //   });
-    await store.dispatch("jobs/getJobs");
+
+  async fetch({ store, params }) {
+    var qstring = {};
+    if (params.mainCategory != "all")
+      qstring = {
+        qstring: { mainCategory: params.mainCategory, category: "" }
+      };
+    await store.dispatch("jobs/getJobsQueryString", qstring);
   },
+
   head() {
     return {
-      title: this.category,
+      title: this.mainCategory,
       meta: [
         // hid is used as unique identifier. Do not use `vmid` for it as it will not work
         { hid: "description", name: "description", content: this.category }
       ]
     };
   },
+
   methods: {
     show: function() {
       //alert(this.data.category);

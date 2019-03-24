@@ -8,17 +8,19 @@ module.exports = {
     baseApi: 'http://localhost:3000' + "/api"
   },
   router: {
-    base: '/'
+    base: '/',
+    prefetchLinks: true
+
   },
   /*
   ** Headers of the page
   */
   head: {
-    title: pkg.name,
+    title: "Jewish Jobs on Macher: The Largest Jewish Classifieds Website in the US",
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      { hid: 'description', name: 'description', content: "The largest jewish jobs website in NYC, Brooklyn, Boro Park, Five Towns, Crown Heights, Woodmere, Monsey, Lakewood and more." }
     ],
     link: [
       { rel: 'stylesheet', href: '/css/style.css' },

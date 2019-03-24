@@ -17,15 +17,13 @@
         @change="setFilter($event)"
         v-model="stateId"
       >
-        <option v-for="item in stateIdData" :value="item.id" :key="item.id">
-          {{item.name}} ({{item.sum}})
-          <a
-            class="selectlink"
-            :href="$route.fullPath + '?stateId=' +item.id"
-          >{{item.name}} ({{item.sum}})</a>
-        </option>
+        <option
+          v-for="item in stateIdData"
+          :value="item.id"
+          :key="item.id"
+        >{{item.name}} ({{item.sum}})</option>
       </select>
-
+      
       <select
         :disabled="!stateId"
         class="selectpicker margin-top-20"
@@ -37,13 +35,11 @@
         @change="setFilter($event)"
         v-model="cityId"
       >
-        <option v-for="item in cityIdData" :value="item.id" :key="item.id">
-          {{item.name}} ({{item.sum}})
-          <a
-            class="selectlink"
-            :href="$route.fullPath + qstringPrefix() + 'cityId=' +item.id"
-          >{{item.name}} ({{item.sum}})</a>
-        </option>
+        <option
+          v-for="item in cityIdData"
+          :value="item.id"
+          :key="item.id"
+        >{{item.name}} ({{item.sum}})</option>
       </select>
     </div>
 
@@ -77,11 +73,7 @@
         @change="setFilter($event)"
       >
         <option v-for="item in mainCategoryIdData" :value="item.id" :key="item.id">
-          {{item.name}} ({{item.sum}})
-          <a
-            class="selectlink"
-            :href="'/'+item.qstring"
-          >{{item.name}} ({{item.sum}})</a>
+          <n-link to="/office-work" href>{{item.name}} ({{item.sum}})</n-link>
         </option>
       </select>
       <!-- Sub Categories -->
@@ -96,13 +88,11 @@
         v-model="categoryId"
         @change="setFilter($event)"
       >
-        <option v-for="item in categoryIdData" :value="item.id" :key="item.id">
-          {{item.name}} ({{item.sum}})
-          <a
-            class="selectlink"
-            :href="'/'+$route.params.mainCategory +'/'+item.qstring"
-          >{{item.name}} ({{item.sum}})</a>
-        </option>
+        <option
+          v-for="item in categoryIdData"
+          :value="item.id"
+          :key="item.id"
+        >{{item.name}} ({{item.sum}})</option>
       </select>
     </div>
 
@@ -151,6 +141,7 @@
 
 <script>
 import FilteredItems from "~/components/FilteredItems";
+import axios from "axios";
 import { createNamespacedHelpers } from "vuex";
 import { mapMutations, mapActions, mapState } from "vuex";
 import { createHelpers } from "vuex-map-fields";
@@ -160,20 +151,20 @@ const { mapFields } = createHelpers({
 });
 
 export default {
-  name: "JobsFilter",
+  name: "JobsFilterMobile",
 
   data: function() {
     return {
       title: "Jobs",
-      filteredItems: []
+      filteredItems: [],
+      cityIdData: [],
+      categoryIdData: []
     };
   },
   computed: {
     ...mapState("jobs", {
       stateIdData: state => state.stateIdData,
       mainCategoryIdData: state => state.mainCategoryIdData,
-      cityIdData: state => state.cityIdData,
-      categoryIdData: state => state.categoryIdData,
       freelanceData: state => state.freelanceData,
       fromHomeData: state => state.fromHomeData,
       partTimeData: state => state.partTimeData,
@@ -238,11 +229,12 @@ export default {
 
       var arr = this[name + "Data"];
 
-      var selected = arr.filter(x => x.id == id)[0];
-      var text = selected ? selected.name : "";
-      if (name == "freeText") text = id;
+      var text =
+        arr && arr.length
+          ? this[name + "Data"].filter(x => x.id == id)[0].name
+          : name;
 
-      if (!text) return;
+      if (name == "freeText") text = id;
 
       var item = {
         id: id,
@@ -255,10 +247,6 @@ export default {
     reset: function() {
       this.filteredItems = [];
       this.resetFilter();
-      $nuxt.$root.$loading.start();
-      this.search().then(() => {
-        $nuxt.$root.$loading.finish();
-      });
     },
 
     addFilterItem: function(filterItemDef) {
@@ -288,7 +276,8 @@ export default {
       }
     },
     setFilter: function($event, name) {
-      //if ($event && !$event.currentTarget.value) return;
+      if (!$event.currentTarget.value) return;
+
       var self = this;
       var name = $event && $event.target.id ? $event.target.id : name;
       var filterItemDef = this.filterDefinition.find(x => x.name == name);
@@ -300,25 +289,32 @@ export default {
           x => x.name == filterItemDef.subCategory
         );
         this.addFilterItem(item);
+        this["set" + filterItemDef.subCategory + "Data"]();
       }
 
       this.addFilterItem(filterItemDef);
-      if (filterItemDef.server) {
-        $nuxt.$root.$loading.start();
-        this.search().then(() => {
-          $nuxt.$root.$loading.finish();
+    },
+    setcityIdData: function() {
+      var self = this;
+      return axios
+        .post(process.env.baseApi + "/cities", { stateId: this.stateId })
+        .then(cities => {
+          var data = cities.data.data.recordsets;
+          self.cityIdData = data[0];
         });
-      }
     },
-    qstringPrefix() {
-      if (this.$route.query.stateId > 0)
-       return "&";
-      else return "?";
+    setcategoryIdData: function() {
+      var self = this;
+      return axios
+        .post(process.env.baseApi + "/categories", {
+          mainCategoryId: this.mainCategoryId
+        })
+        .then(categories => {
+          var data = categories.data.data.recordsets;
+          self.categoryIdData = data[0];
+        });
     },
-    ...mapActions("jobs", {
-      search: "getJobs",
-      resetFilter: "resetFilter"
-    }),
+    ...mapActions("jobs", { resetFilter: "resetFilter" }),
     ...mapMutations("jobs", { updateFilter: "setFilter" })
   },
 
@@ -327,29 +323,14 @@ export default {
       $(".selectpicker").selectpicker("refresh");
     });
   },
+
   mounted() {
     if (process.browser) {
       require("bootstrap-select");
-      $(".selectpicker").selectpicker("refresh");
-    }
-    if (this.mainCategoryId > 0) {
-      $("#mainCategoryId").val(this.mainCategoryId);
-      this.addSingleFilterItem(this.mainCategoryId, "mainCategoryId");
-    }
-
-    if (this.categoryId > 0) {
-      $("#categoryId").val(this.categoryId);
-      this.addSingleFilterItem(this.categoryId, "categoryId");
-    }
-
-    if (this.stateId > 0) {
-      $("#stateId").val(this.stateId);
-      this.addSingleFilterItem(this.stateId, "stateId");
-    }
-
-    if (this.cityId > 0) {
-      $("#cityId").val(this.cityId);
-      this.addSingleFilterItem(this.cityId, "cityId");
+      if (this.mainCategoryId > 0) {
+        $("#mainCategoryId").val(this.mainCategoryId);
+        $(".selectpicker").selectpicker("refresh");
+      }
     }
   }
 };
