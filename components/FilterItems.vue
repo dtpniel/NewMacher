@@ -1,5 +1,5 @@
 <template>
-  <div v-if="items.length">
+  <div v-if="items.length" class="margin-bottom-20">
     <span class="keyword keywordreset" V-if="items.length">
       <span @click="reset()" class="keyword-remove"></span>
       <span class="keyword-text">RESET</span>
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: "FilteredItems",
+  name: "FilterItems",
   props: {
     items: {
       type: Array,

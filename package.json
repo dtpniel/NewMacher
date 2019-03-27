@@ -22,6 +22,7 @@
     "bootstrap-vue": "^2.0.0-beta",
     "cross-env": "^5.2.0",
     "jquery": "^3.3.1",
+    "mobile-detect": "^1.4.3",
     "moment": "^2.23.0",
     "mssql": "^4.3.0",
     "nuxt": "^2.3.4",

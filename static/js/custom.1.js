@@ -310,11 +310,11 @@ function initialCustom() {
 	});
 
 	// Sliding Sidebar 
-	$('.enable-filters-button').on('click', function () {
-		$('.full-page-sidebar').toggleClass("enabled-sidebar");
-		$(this).toggleClass("active");
-		$('.filter-button-tooltip').removeClass('tooltip-visible');
-	});
+	// $('.enable-filters-button').on('click', function () {
+	// 	$('.full-page-sidebar').toggleClass("enabled-sidebar");
+	// 	$(this).toggleClass("active");
+	// 	$('.filter-button-tooltip').removeClass('tooltip-visible');
+	// });
 
 	/*  Enable Filters Button Tooltip */
 	$(window).on('load', function () {

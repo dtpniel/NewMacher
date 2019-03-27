@@ -8,7 +8,7 @@
         role="dialog"
         aria-labelledby="modalBottomLabel"
         aria-hidden="true"
-        v-if="isMobile()"
+        v-if="isMobile"
       >
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -19,7 +19,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <jobs-filter-mobile v-if="isMobile()"/>
+              <jobs-filter-mobile v-if="isMobile"/>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" id="btnSave" @click="serach()">
@@ -30,10 +30,11 @@
           </div>
         </div>
       </div>
-
+      <!-- breadcrumbd -->
+      <!-- <breadcrumbs/> -->
       <!-- filter -->
       <div class="col-xl-3 col-lg-4">
-        <jobs-filter v-if="!isMobile()"/>
+        <jobs-filter v-if="!isMobile"/>
       </div>
 
       <!-- results -->
@@ -50,19 +51,29 @@
 
           <div class="sort-by">
             <span>Sort by:</span>
-            
+
             <select class="selectpicker hide-tick" @change="sort($event)">
               <option v-for="item in sortByList" :value="item.id" :key="item.id">{{item.name}}</option>
             </select>
           </div>
         </div>
-        <button
+        <premium-jobs :jobs="jobs" v-if="!isMobile"/>
+        <!-- <button
           type="button"
           class="button ripple-effect"
           data-toggle="modal"
           data-target="#modalBottom"
-          v-if="isMobile()"
-        >Refine Results</button>
+          v-if="isMobile"
+        >Refine Results</button> -->
+
+
+          <button class="enable-filters-button" v-if="isMobile" data-toggle="modal" data-target="#modalBottom">
+            <i class="enable-filters-button-icon"></i>
+            <span class="show-text">Show Filters</span>
+            <span class="hide-text">Hide Filters</span>
+          </button>
+     
+
         <!-- results -->
         <jobs-results/>
       </div>
@@ -74,14 +85,16 @@ import axios from "axios";
 import JobsResults from "~/components/JobsResults";
 import JobsFilter from "~/components/JobsFilter";
 import JobsFilterMobile from "~/components/JobsFilterMobile";
-import { mapGetters } from "vuex";
+import PremiumJobs from "~/components/PremiumJobs";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   name: "JobsList",
   components: {
     JobsFilter,
     JobsFilterMobile,
-    JobsResults
+    JobsResults,
+    PremiumJobs
   },
   data: function() {
     return {
@@ -96,7 +109,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      sum: "jobs/sum"
+      sum: "jobs/sum",
+      isMobile: "isMobile"
     })
   },
 
@@ -107,7 +121,10 @@ export default {
       this.$store.commit("jobs/setFilter", { sortBy });
     },
     serach: function() {
-      this.$store.dispatch("jobs/getJobsMobile");
+      $nuxt.$root.$loading.start();
+      this.$store.dispatch("jobs/getJobsMobile").then(() => {
+        $nuxt.$root.$loading.finish();
+      });
     },
     errorCaptured: function(error) {
       console.log(error);

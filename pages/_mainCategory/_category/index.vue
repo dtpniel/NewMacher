@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="margin-top-90"></div>
+  <div class="main-jobs">
+    <div class="margin-top-30"></div>
     <jobs-list/>
   </div>
 </template>
@@ -29,64 +29,36 @@ export default {
   components: {
     JobsList
   },
-  // async fetch({ store, params }) {
-  //   var qstring = {};
-  //   qstring = {
-  //     qstring: { mainCategory: params.mainCategory, category: params.category }
-  //   };
-  //   await store.dispatch("jobs/getJobsQueryString", qstring);
-  // },
 
   async asyncData({ app, params, store }) {
     var qstring = {};
     var query = app.context.route.query;
     var stateId = query.stateId ? query.stateId : 0;
     var cityId = query.cityId ? query.cityId : "";
-    var mainCategory = params.mainCategory ? params.mainCategory : 0;
+    var mainCategory = params.mainCategory ? params.mainCategory : "";
     var category = params.category ? params.category : "";
-
+    var isMobile = store.state.isMobile;
     qstring = {
       qstring: {
         mainCategory: mainCategory,
         category: category,
         stateId: stateId,
-        cityId: cityId
+        cityId: cityId,
+        isMobile: isMobile
       }
     };
-    await store.dispatch("jobs/getJobsQueryString", qstring);
+    await store.dispatch("jobs/getJobsQueryString", {
+      qstring: qstring,
+      route: app.context.route
+    });
   },
 
   head() {
     return {
       title: this.metaTags.title,
-      meta: [
-        // hid is used as unique identifier. Do not use `vmid` for it as it will not work
-        {
-          hid: "description",
-          name: "description",
-          content: this.metaTags.description
-        },
-        { rel: "canonical", href: this.metaTags.canonical, id: "canonical" },
-        {
-          hid: "og:title",
-          name: "og:title",
-          content: this.metaTags.socialTitle
-        },
-        {
-          hid: "og:description",
-          name: "og:description",
-          content: this.metaTags.socialDescription
-        },
-        {
-          hid: "og:url",
-          name: "og:url",
-          content: this.metaTags.canonical
-        }
-      ]
+      link: [{ rel: "canonical", href: this.metaTags.canonical }],
+      meta: [this.createMetaTags(this.metaTags)]
     };
-  },
-  methods: {
-    show: function() {}
   }
 };
 </script>

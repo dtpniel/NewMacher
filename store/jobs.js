@@ -1,7 +1,5 @@
-
 import axios from 'axios'
 import { getField, updateField } from 'vuex-map-fields';
-import { loadavg } from 'os';
 
 var dataIndex = {
   jobs: 0,
@@ -130,70 +128,37 @@ export const state = () => ({
     description: "The largest jewish jobs website in NYC, Brooklyn, Boro Park, Five Towns, Crown Heights, Woodmere, Monsey, Lakewood and more.",
     socialTitle: "",
     socialDescription: "",
-    canonical: ""
+    canonical: "",
+    twitter: "@FrumJewishJobs",
+    siteName: "Macher"
   }
 });
 
 export const mutations = {
+
   setJobs(state, data) {
     state.jobs = data;
   },
+
   setStateData(state, data) {
     state.stateIdData = data;
   },
+
   setCityData(state, data) {
     state.cityIdData = data;
   },
+
   setMainCategoryData(state, data) {
     state.mainCategoryIdData = data;
   },
+
   setCategoryData(state, data) {
     state.categoryIdData = data;
-  },
-
-  setMetaTags(state, data) {
-    var title;
-    var description;
-    var location = "";
-
-    var mainCategory = data[dataIndex.mainCategorySEO];
-    if (mainCategory[0]) {
-      title = mainCategory[0].title;
-      description = mainCategory[0].description;
-    }
-
-    var categroy = data[dataIndex.categorySEO];
-    if (categroy[0]) {
-      title = categroy[0].title;
-      description = categroy[0].description;
-    }
-
-    var stateUS = data[dataIndex.stateSEO]
-    if (stateUS[0]) {
-      location = " in " + stateUS[0].title;
-    }
-
-    var city = data[dataIndex.citySEO]
-    if (city[0]) {
-      location = " in " + city[0].title;
-    }
-
-    if (!title)
-      return;
-
-    state.title = "Jewish " + title + " Jobs" + location + " on Macher";
-    state.description = "Search here for thousands of jewish jobs - "
-      + description + location +
-      " and more on Macher, the largest jewish classifieds website";
-    state.socialTitle = title + " Jobs";
-    state.socialDescription = description + " jobs";
-    state.canonical = "";
   },
 
   setMetaTags(state, metaTags) {
     state.metaTags = Object.assign({}, state.metaTags, metaTags);
   },
-
 
   setFilter(state, filter) {
     state.filter = Object.assign({}, state.filter, filter)
@@ -259,6 +224,8 @@ export const actions = {
   async getJobs({ commit, state }) {
     return axios.post(process.env.baseApi + "/jobs", { filter: state.filter })
       .then(jobs => {
+        if (!jobs.data)
+          return;
         var data = jobs.data.data.recordsets;
         commit("setJobs", data[dataIndex.jobs]);
         commit("setStateData", data[dataIndex.states]);
@@ -272,39 +239,65 @@ export const actions = {
   async getJobsMobile({ commit, state }) {
     return axios.post(process.env.baseApi + "/jobsMobile", { filter: state.filter })
       .then(jobs => {
+        if (!jobs.data)
+          return;
         var data = jobs.data.data.recordsets;
         commit("setJobs", data[dataIndex.jobs]);
+        // commit("setStateData", data[dataIndex.states]);
+        // commit("setMainCategoryData", data[dataIndex.mainCategories]);
       }
       )
   },
 
-  async getJobsQueryString({ commit, dispatch }, qstring) {
-    return axios.post(process.env.baseApi + "/jobsQueryString", qstring)
+  async getJobsQueryString({ commit, dispatch }, data) {
+    var route = data.route;
+    return axios.post(process.env.baseApi + "/jobsQueryString", data.qstring)
       .then(jobs => {
+        if (!jobs.data.data)
+          return;
         var data = jobs.data.data.recordsets;
         commit("setJobs", data[dataIndex.jobs]);
         commit("setStateData", data[dataIndex.states]);
         commit("setCityData", data[dataIndex.cities]);
         commit("setMainCategoryData", data[dataIndex.mainCategories]);
         commit("setCategoryData", data[dataIndex.categories]);
-        dispatch("setMetaTags", data);
+        dispatch("setMetaTags", { data: data, route: route });
       }
       )
   },
 
-  setMetaTags({ commit, rootState }, data) {
+  setMetaTags({ commit }, data) {
+    var route = data.route;
+    var data = data.data;
+
+    var breadcrumbs = [{
+      name: "Home",
+      url: "/"
+    }];
+
     var metaTags = {
-      title: "", description: "", socialTitle: "", socialDescription: "", canonical: ""
+      title: "",
+      description: "",
+      socialTitle: "",
+      socialDescription: "",
+      canonical: ""
     };
+
+    var params = [];
 
     var title;
     var description;
+    var qstring1, qstring2;
     var location = "";
+    var canonical = "";
 
+    //grap the information from db result
     var mainCategory = data[dataIndex.mainCategorySEO];
     if (mainCategory[0]) {
       title = mainCategory[0].title;
       description = mainCategory[0].description;
+      qstring1 = mainCategory[0].qstring;
+      breadcrumbs.push({ name: title, url: "/" + qstring1 })
       commit("setFilter", { mainCategoryId: mainCategory[0].mainCategoryId });
     }
 
@@ -312,31 +305,48 @@ export const actions = {
     if (category[0]) {
       title = category[0].title;
       description = category[0].description;
+      qstring2 = category[0].qstring;
+      breadcrumbs.push({ name: title, url: "/" + qstring1 + "/" + qstring2 })
       commit("setFilter", { categoryId: [category[0].categoryId] });
     }
 
     var stateUS = data[dataIndex.stateSEO]
     if (stateUS[0]) {
       location = " in " + stateUS[0].title;
+      params.push({ name: "stateId", id: stateUS[0].stateId });
       commit("setFilter", { stateId: stateUS[0].stateId });
     }
 
     var city = data[dataIndex.citySEO]
     if (city[0]) {
       location = " in " + city[0].title;
+      params.push({ name: "cityId", id: city[0].cityId });
       commit("setFilter", { cityId: [city[0].cityId] });
     }
 
     if (!title)
       return;
 
+    //create canonical by params
+    canonical = process.env.baseUrl + breadcrumbs[breadcrumbs.length - 1].url;
+    params.forEach((param, index) => {
+      if (index == 0)
+        canonical += "?";
+      else
+        canonical += "&";
+      canonical += param.name + "=" + param.id;
+    });
+
+
+    //final: set the tags
     metaTags.title = "Jewish " + title + " Jobs" + location + " on Macher";
     metaTags.description = "Search here for thousands of jewish jobs - "
       + description + location +
       " and more on Macher, the largest jewish classifieds website";
     metaTags.socialTitle = title + "Jobs";
     metaTags.socialDescription = description + "Jobs";
-    metaTags.canonical = "";
+    metaTags.canonical = canonical;
+
 
     commit("setMetaTags", metaTags);
   },

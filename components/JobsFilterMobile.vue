@@ -2,7 +2,7 @@
   <div class="sidebar-container">
     <!-- filter items -->
     <div class="row">
-      <filtered-items :items="filteredItems" @reset="reset" @removeFilterItem="removeFilterItem"/>
+      <filter-items :items="filterItems" @reset="reset" @removeFilterItem="removeFilterItem"/>
       <div class="clearfix"></div>
     </div>
     <!-- Location -->
@@ -17,13 +17,15 @@
         @change="setFilter($event)"
         v-model="stateId"
       >
-        <option
-          v-for="item in stateIdData"
-          :value="item.id"
-          :key="item.id"
-        >{{item.name}} ({{item.sum}})</option>
+        <option v-for="item in stateIdData" :value="item.id" :key="item.id">
+          {{item.name}} ({{item.sum}})
+          <a
+            class="selectlink"
+            :href="$route.fullPath + '?stateId=' +item.id"
+          >{{item.name}} ({{item.sum}})</a>
+        </option>
       </select>
-      
+
       <select
         :disabled="!stateId"
         class="selectpicker margin-top-20"
@@ -35,11 +37,13 @@
         @change="setFilter($event)"
         v-model="cityId"
       >
-        <option
-          v-for="item in cityIdData"
-          :value="item.id"
-          :key="item.id"
-        >{{item.name}} ({{item.sum}})</option>
+        <option v-for="item in cityIdData" :value="item.id" :key="item.id">
+          {{item.name}} ({{item.sum}})
+          <a
+            class="selectlink"
+            :href="$route.fullPath + qstringPrefix() + 'cityId=' +item.id"
+          >{{item.name}} ({{item.sum}})</a>
+        </option>
       </select>
     </div>
 
@@ -73,7 +77,11 @@
         @change="setFilter($event)"
       >
         <option v-for="item in mainCategoryIdData" :value="item.id" :key="item.id">
-          <n-link to="/office-work" href>{{item.name}} ({{item.sum}})</n-link>
+          {{item.name}} ({{item.sum}})
+          <a
+            class="selectlink"
+            :href="'/'+item.qstring"
+          >{{item.name}} ({{item.sum}})</a>
         </option>
       </select>
       <!-- Sub Categories -->
@@ -88,11 +96,13 @@
         v-model="categoryId"
         @change="setFilter($event)"
       >
-        <option
-          v-for="item in categoryIdData"
-          :value="item.id"
-          :key="item.id"
-        >{{item.name}} ({{item.sum}})</option>
+        <option v-for="item in categoryIdData" :value="item.id" :key="item.id">
+          {{item.name}} ({{item.sum}})
+          <a
+            class="selectlink"
+            :href="'/'+$route.params.mainCategory +'/'+item.qstring"
+          >{{item.name}} ({{item.sum}})</a>
+        </option>
       </select>
     </div>
 
@@ -140,7 +150,7 @@
 </template>
 
 <script>
-import FilteredItems from "~/components/FilteredItems";
+import FilterItems from "~/components/FilterItems";
 import axios from "axios";
 import { createNamespacedHelpers } from "vuex";
 import { mapMutations, mapActions, mapState } from "vuex";
@@ -156,7 +166,7 @@ export default {
   data: function() {
     return {
       title: "Jobs",
-      filteredItems: [],
+      filterItems: [],
       cityIdData: [],
       categoryIdData: []
     };
@@ -187,12 +197,12 @@ export default {
   },
 
   components: {
-    FilteredItems
+    FilterItems
   },
 
   methods: {
     removeFilterItem: function(item) {
-      var arr = this.filteredItems;
+      var arr = this.filterItems;
       var name = item.name;
       //remove filter item
       const index = arr.findIndex(x => x.id == item.id && x.name == item.name);
@@ -241,25 +251,30 @@ export default {
         text: text,
         name: name
       };
-      this.filteredItems.push(item);
+      this.filterItems.push(item);
     },
 
     reset: function() {
-      this.filteredItems = [];
+      this.filterItems = [];
       this.resetFilter();
+    },
+
+    qstringPrefix() {
+      if (this.$route.query) return "&";
+      else return "?";
     },
 
     addFilterItem: function(filterItemDef) {
       if (!filterItemDef.multiple) {
         var id = this[filterItemDef.name];
-        var arr = this.filteredItems;
+        var arr = this.filterItems;
         //remove existing filter item
-        this.filteredItems = arr.filter(x => x.name !== filterItemDef.name);
+        this.filterItems = arr.filter(x => x.name !== filterItemDef.name);
 
         this.addSingleFilterItem(id, filterItemDef.name);
       } else {
         var ids = this[filterItemDef.name];
-        var arr = this.filteredItems.filter(x => x.name == filterItemDef.name);
+        var arr = this.filterItems.filter(x => x.name == filterItemDef.name);
 
         ids.forEach(id => {
           var index = arr.findIndex(x => x.id == id);
@@ -276,8 +291,6 @@ export default {
       }
     },
     setFilter: function($event, name) {
-      if (!$event.currentTarget.value) return;
-
       var self = this;
       var name = $event && $event.target.id ? $event.target.id : name;
       var filterItemDef = this.filterDefinition.find(x => x.name == name);
@@ -327,10 +340,28 @@ export default {
   mounted() {
     if (process.browser) {
       require("bootstrap-select");
-      if (this.mainCategoryId > 0) {
-        $("#mainCategoryId").val(this.mainCategoryId);
-        $(".selectpicker").selectpicker("refresh");
-      }
+      $(".selectpicker").selectpicker("refresh");
+    }
+    if (this.mainCategoryId > 0) {
+      $("#mainCategoryId").val(this.mainCategoryId);
+      this.addSingleFilterItem(this.mainCategoryId, "mainCategoryId");
+      Object.assign(this.categoryIdData, this.$store.state.jobs.categoryIdData);
+    }
+
+    if (this.categoryId > 0) {
+      $("#categoryId").val(this.categoryId);
+      this.addSingleFilterItem(this.categoryId, "categoryId");
+    }
+
+    if (this.stateId > 0) {
+      $("#stateId").val(this.stateId);
+      this.addSingleFilterItem(this.stateId, "stateId");
+      Object.assign(this.cityIdData, this.$store.state.jobs.cityIdData);
+    }
+
+    if (this.cityId > 0) {
+      $("#cityId").val(this.cityId);
+      this.addSingleFilterItem(this.cityId, "cityId");
     }
   }
 };

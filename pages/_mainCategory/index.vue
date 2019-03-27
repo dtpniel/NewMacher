@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="margin-top-90"></div>
+  <div class="main-jobs">
+    <div class="margin-top-30"></div>
     <jobs-list/>
   </div>
 </template>
@@ -8,6 +8,7 @@
 <script>
 import Route from "vue-router";
 import JobsList from "~/components/Jobslist.vue";
+import { mapState } from "vuex";
 
 import axios from "axios";
 
@@ -18,35 +19,46 @@ export default {
     };
   },
 
+  computed: {
+    ...mapState("jobs", {
+      metaTags: state => state.metaTags
+    })
+  },
+
   components: {
     JobsList
   },
 
-  async fetch({ store, params }) {
+  async asyncData({ app, params, store }) {
     var qstring = {};
-    if (params.mainCategory != "all")
-      qstring = {
-        qstring: { mainCategory: params.mainCategory, category: "" }
-      };
-    await store.dispatch("jobs/getJobsQueryString", qstring);
+    var query = app.context.route.query;
+    var stateId = query.stateId ? query.stateId : 0;
+    var cityId = query.cityId ? query.cityId : "";
+    var mainCategory =
+      params.mainCategory && params.mainCategory != "all"
+        ? params.mainCategory
+        : "";
+    var isMobile = store.state.isMobile;
+    qstring = {
+      qstring: {
+        mainCategory: mainCategory,
+        stateId: stateId,
+        cityId: cityId,
+        isMobile: isMobile
+      }
+    };
+    await store.dispatch("jobs/getJobsQueryString", {
+      qstring: qstring,
+      route: app.context.route
+    });
   },
 
   head() {
     return {
-      title: this.mainCategory,
-      meta: [
-        // hid is used as unique identifier. Do not use `vmid` for it as it will not work
-        { hid: "description", name: "description", content: this.category }
-      ]
+      title: this.metaTags.title,
+      link: [{ rel: "canonical", href: this.metaTags.canonical }],
+      meta: [this.createMetaTags(this.metaTags)]
     };
-  },
-
-  methods: {
-    show: function() {
-      //alert(this.data.category);
-      //this.data.category="happy";
-      console.log(this.$route.params.category);
-    }
   }
 };
 </script>

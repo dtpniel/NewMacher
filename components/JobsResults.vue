@@ -1,5 +1,5 @@
 <template>
-  <div class="listings-container compact-list-layout margin-top-35 margin-bottom-35">
+  <div class="listings-container compact-list-layout margin-top-15 margin-bottom-35">
     <div
       v-if="!jobs.length"
       class="alert alert-danger"
@@ -18,18 +18,19 @@
       <div class="job-listing-details">
         <!-- Logo -->
         <div class="job-listing-company-logo">
-          <img src="images/no-company3.png" alt>
+          <img src="images/centers.png" alt>
+         <!-- <img src="images/company-logo-05.png" alt>  -->
         </div>
 
         <!-- Details -->
         <div class="job-listing-description">
-          <h3 class="job-listing-title">{{item.title | truncate(50)}}</h3>
+          <h3 class="job-listing-title">{{item.title | truncate(200)}}</h3>
 
           <!-- Job Listing Footer -->
           <div class="job-listing-footer">
             <ul>
               <li>
-                <i class="icon-material-outline-business"></i> Hamaspik
+                <i class="icon-material-outline-business"></i> Centers Health Care
                 <!-- <div
                   class="verified-badge"
                   data-tippy-placement="top"

@@ -2,7 +2,7 @@
   <div class="sidebar-container">
     <!-- filter items -->
     <div class="row">
-      <filtered-items :items="filteredItems" @reset="reset" @removeFilterItem="removeFilterItem"/>
+      <filter-items :items="filterItems" @reset="reset" @removeFilterItem="removeFilterItem"/>
       <div class="clearfix"></div>
     </div>
     <!-- Location -->
@@ -114,7 +114,8 @@
         <div class="switch-container">
           <label class="switch">
             <input type="checkbox" id="freelance" v-model="freelance" @change="setFilter($event)">
-            <span class="switch-button"></span> Freelance
+            <span class="switch-button"></span>
+            Freelance
           </label>
         </div>
 
@@ -150,7 +151,7 @@
 </template>
 
 <script>
-import FilteredItems from "~/components/FilteredItems";
+import FilterItems from "~/components/FilterItems";
 import { createNamespacedHelpers } from "vuex";
 import { mapMutations, mapActions, mapState } from "vuex";
 import { createHelpers } from "vuex-map-fields";
@@ -165,7 +166,7 @@ export default {
   data: function() {
     return {
       title: "Jobs",
-      filteredItems: []
+      filterItems: []
     };
   },
   computed: {
@@ -196,12 +197,12 @@ export default {
   },
 
   components: {
-    FilteredItems
+    FilterItems
   },
 
   methods: {
     removeFilterItem: function(item) {
-      var arr = this.filteredItems;
+      var arr = this.filterItems;
       var name = item.name;
       //remove filter item
       const index = arr.findIndex(x => x.id == item.id && x.name == item.name);
@@ -249,11 +250,11 @@ export default {
         text: text,
         name: name
       };
-      this.filteredItems.push(item);
+      this.filterItems.push(item);
     },
 
     reset: function() {
-      this.filteredItems = [];
+      this.filterItems = [];
       this.resetFilter();
       $nuxt.$root.$loading.start();
       this.search().then(() => {
@@ -264,14 +265,14 @@ export default {
     addFilterItem: function(filterItemDef) {
       if (!filterItemDef.multiple) {
         var id = this[filterItemDef.name];
-        var arr = this.filteredItems;
+        var arr = this.filterItems;
         //remove existing filter item
-        this.filteredItems = arr.filter(x => x.name !== filterItemDef.name);
+        this.filterItems = arr.filter(x => x.name !== filterItemDef.name);
 
         this.addSingleFilterItem(id, filterItemDef.name);
       } else {
         var ids = this[filterItemDef.name];
-        var arr = this.filteredItems.filter(x => x.name == filterItemDef.name);
+        var arr = this.filterItems.filter(x => x.name == filterItemDef.name);
 
         ids.forEach(id => {
           var index = arr.findIndex(x => x.id == id);
@@ -311,8 +312,7 @@ export default {
       }
     },
     qstringPrefix() {
-      if (this.$route.query.stateId > 0)
-       return "&";
+      if (this.$route.query) return "&";
       else return "?";
     },
     ...mapActions("jobs", {
