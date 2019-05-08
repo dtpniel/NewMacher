@@ -17,7 +17,12 @@ Vue.mixin({
     //   return false;
 
     // },
-
+    isHomePage() {
+      if (this.$router.currentRoute.path.toString() == '/')
+        return true;
+      else
+        return false;
+    },
     createMetaTags(metaTags) {
       var metaTags =
         [

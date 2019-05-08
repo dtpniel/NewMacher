@@ -8,13 +8,19 @@
 
     <!-- Job Listing -->
     <a
-      v-for="item in jobs"
+      v-for="(item,index) in jobs"
       :key="item.id"
       :href="'single-job-page.html?id=' + item.id"
       class="job-listing"
+       :class="{  'job-listing-mobile' :isMobile}"
     >
       <!-- <a href="single-job-page.html" class="job-listing"> -->
       <!-- Job Listing Details -->
+         <h3 v-if="((index)%perPage)==0||index==0" style="font-weight:bold" class="margin-bottom-20">
+        <span class="icon-feather-arrow-right"></span>
+        Page {{Math.floor((index+1)/perPage)+1}}
+      </h3>
+
       <div class="job-listing-details">
         <!-- Logo -->
         <div class="job-listing-company-logo">
@@ -62,13 +68,22 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+
 export default {
   name: "JobsResults",
   computed: {
     ...mapGetters({
-      jobs: "jobs/filteredJobsSliced"
+       jobs: "jobs/filteredJobsSliced",
+      sum: "jobs/sum",
+      perPage: "jobs/perPage",
+      isMobile: "isMobile"
     })
+  },
+    methods: {
+    page: function(index) {
+      return this.sum % this.perPage;
+    }
   }
 };
 </script>

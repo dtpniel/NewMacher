@@ -10,11 +10,13 @@ var dataIndex = {
   mainCategorySEO: 5,
   categorySEO: 6,
   stateSEO: 7,
-  citySEO: 8
+  citySEO: 8,
+  premiumJobs: 9
 };
 
 export const state = () => ({
   jobs: [],
+  premiumJobs: [],
   filter: {
     stateId: 0,
     cityId: [],
@@ -26,8 +28,6 @@ export const state = () => ({
     temporary: 0,
     fromHome: 0,
     freeText: "",
-    start: 0,
-    max: 25,
     sortBy: {}
   },
   filterDefault: {
@@ -130,8 +130,12 @@ export const state = () => ({
     socialDescription: "",
     canonical: "",
     twitter: "@FrumJewishJobs",
-    siteName: "Macher"
-  }
+    siteName: "Macher",
+    categoryName: "",
+    location: ""
+  },
+  currentPage: 1,
+  perPage: 25
 });
 
 export const mutations = {
@@ -156,6 +160,10 @@ export const mutations = {
     state.categoryIdData = data;
   },
 
+  setpremiumJobs(state, data) {
+    state.premiumJobs = data;
+  },
+
   setMetaTags(state, metaTags) {
     state.metaTags = Object.assign({}, state.metaTags, metaTags);
   },
@@ -170,6 +178,14 @@ export const mutations = {
 
   resetFilter(state) {
     Object.assign(state.filter, state.filterDefault);
+  },
+  
+  setcurrentPage(state, currentPage) {
+    state.currentPage = currentPage;
+  },
+
+  setperPage(state, perPage) {
+    state.perPage = perPage;
   }
 
 };
@@ -209,13 +225,43 @@ export const getters = {
       )
   },
   filteredJobsSliced: (state, getters) => {
-    return getters.filteredJobs.slice(state.filter.start, state.filter.max);
-  },
-
+    return getters.filteredJobs.slice(state.filter.start, state.perPage * state.currentPage);
+    },
+    premiumJobs: state => {
+      var filter = state.filter;
+      let jobs = [];
+      let premiumJobs = [];
+  
+      Object.assign(jobs, state.premiumJobs);
+      jobs.sort(function () { return 0.5 - Math.random() });
+  
+      //try to find 3 jobs from the main category
+      premiumJobs = jobs
+        .filter(x => {
+          return (
+            filter.mainCategoryId == 0 ||
+            filter.mainCategoryId == x.mainCategoryId
+          );
+        })
+  
+      //if there are not enough, combine it with other premium ads
+      if (premiumJobs.length < 3) {
+        if (premiumJobs.length > 0)
+          premiumJobs.push(...jobs);
+        else
+          premiumJobs = jobs;
+      }
+  
+      return premiumJobs.slice(0, 3);
+    },
+  
   getFilter: state => {
     return getField(state.filter)
   },
-  sum: (state, getters) => { return getters.filteredJobs.length }
+  sum: (state, getters) => { return getters.filteredJobs.length },
+  currentPage: state => { return state.currentPage },
+  perPage: state => { return state.perPage },
+  metaTags: state => { return state.metaTags }
 };
 
 
@@ -227,11 +273,15 @@ export const actions = {
         if (!jobs.data)
           return;
         var data = jobs.data.data.recordsets;
+
+        // data[dataIndex.states].unshift({ id: 0, name: "All States" });
+        // data[dataIndex.mainCategories].unshift({ id: 0, name: "All Categories" });
         commit("setJobs", data[dataIndex.jobs]);
         commit("setStateData", data[dataIndex.states]);
         commit("setCityData", data[dataIndex.cities]);
         commit("setMainCategoryData", data[dataIndex.mainCategories]);
         commit("setCategoryData", data[dataIndex.categories]);
+        commit("setcurrentPage", 1);
       }
       )
   },
@@ -243,6 +293,7 @@ export const actions = {
           return;
         var data = jobs.data.data.recordsets;
         commit("setJobs", data[dataIndex.jobs]);
+        commit("setcurrentPage", 1);
         // commit("setStateData", data[dataIndex.states]);
         // commit("setMainCategoryData", data[dataIndex.mainCategories]);
       }
@@ -256,11 +307,14 @@ export const actions = {
         if (!jobs.data.data)
           return;
         var data = jobs.data.data.recordsets;
+        // data[dataIndex.states].unshift({ id: 0, name: "All States" });
+        // data[dataIndex.mainCategories].unshift({ id: 0, name: "All Categories" });
         commit("setJobs", data[dataIndex.jobs]);
         commit("setStateData", data[dataIndex.states]);
         commit("setCityData", data[dataIndex.cities]);
         commit("setMainCategoryData", data[dataIndex.mainCategories]);
         commit("setCategoryData", data[dataIndex.categories]);
+        commit("setpremiumJobs", data[dataIndex.premiumJobs]);
         dispatch("setMetaTags", { data: data, route: route });
       }
       )
@@ -280,7 +334,9 @@ export const actions = {
       description: "",
       socialTitle: "",
       socialDescription: "",
-      canonical: ""
+       canonical: "",
+      categoryName: "",
+      location: ""
     };
 
     var params = [];
@@ -347,7 +403,8 @@ export const actions = {
     metaTags.socialDescription = description + "Jobs";
     metaTags.canonical = canonical;
 
-
+    metaTags.categoryName = title;
+    metaTags.location = location;
     commit("setMetaTags", metaTags);
   },
 

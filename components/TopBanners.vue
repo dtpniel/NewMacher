@@ -1,5 +1,5 @@
 <template>
-  <div class="container grid-layout margin-top-30">
+   <div class="container grid-layout margin-top-30 margin-bottom-50">
     <!-- Job Listing -->
     <a href="#" class="job-listing job-premium job-banner" v-for="index in 3" :key="index" style="height:100px;height:130px">
       <!-- Job Listing Details -->

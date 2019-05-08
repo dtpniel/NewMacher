@@ -57,7 +57,7 @@
             </select>
           </div>
         </div>
-        <premium-jobs :jobs="jobs" v-if="!isMobile"/>
+        <!-- <premium-jobs :jobs="jobs" v-if="!isMobile"/> -->
         <!-- <button
           type="button"
           class="button ripple-effect"
@@ -110,8 +110,19 @@ export default {
   computed: {
     ...mapGetters({
       sum: "jobs/sum",
-      isMobile: "isMobile"
-    })
+      isMobile: "isMobile",
+      currentPage: "jobs/currentPage",
+      isMobile: "isMobile",
+      metaTags: "jobs/metaTags"
+    }),
+    currentPage: {
+      get() {
+        return this.$store.getters["jobs/currentPage"];
+      },
+      set(value) {
+        this.$store.commit("jobs/setcurrentPage", value);
+      }
+    }
   },
 
   methods: {
@@ -128,7 +139,20 @@ export default {
     },
     errorCaptured: function(error) {
       console.log(error);
-    }
+    },
+        scroll:function() {
+      window.onscroll = () => {
+        let bottomOfWindow =
+          document.documentElement.scrollTop + window.innerHeight >=
+          document.documentElement.offsetHeight * 0.9;
+        if (bottomOfWindow) {
+          console.log(bottomOfWindow);
+          this.currentPage++;
+          console.log(this.currentPage);
+        }
+      }
+        }
+
     // discard: function() {
     //   this.$store.commit("jobs/setFilter", this.initialFilter);
     // },
@@ -142,6 +166,7 @@ export default {
   mounted() {
     if (process.browser) {
       initialCustom();
+         this.scroll();
     }
   }
 };

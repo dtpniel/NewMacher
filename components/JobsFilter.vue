@@ -239,7 +239,7 @@ export default {
 
       var arr = this[name + "Data"];
 
-      var selected = arr.filter(x => x.id == id)[0];
+           var selected = arr ? arr.filter(x => x.id == id)[0] : undefined;
       var text = selected ? selected.name : "";
       if (name == "freeText") text = id;
 

@@ -467,8 +467,8 @@
 
     <!-- Page Content
     ==================================================-->
-    <div class="margin-top-70"></div>
-    <top-banners/>
+   <search v-if="!isHomePage()"/>
+    <top-banners v-if="!isHomePage() && !$store.getters.isMobile"/>
     <nuxt/>
 
     <!-- Footer
@@ -707,9 +707,11 @@
 </template>
 <script>
 import TopBanners from "~/components/TopBanners";
+import Search from "~/components/Search";
 export default {
   components: {
-    TopBanners
+    TopBanners,
+    Search
   }
 };
 </script>

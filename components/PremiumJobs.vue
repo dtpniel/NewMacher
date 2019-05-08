@@ -1,7 +1,12 @@
 <template>
   <div class="listings-container grid-layout margin-top-30">
     <!-- Job Listing -->
-  <a href="#" class="job-listing job-premium" v-for="index in 3" :key="index">
+    <a
+      class="job-listing job-premium"
+      v-for="item in premiumJobs"
+      :key="item.id"
+      :href="'single-job-page.html?id=' + item.id"
+    >
       <!-- Job Listing Details -->
       <div class="job-listing-details">
         <!-- Logo -->
@@ -9,9 +14,7 @@
         <!-- Details -->
         <div class="job-listing-description">
           <h4 class="job-listing-company">Hot Job!</h4>
-          <h3
-            class="job-listing-title"
-          >Barista and Cashier Barista and Cashier Barista and Cashier Barista and Cashier</h3>
+          <h3 class="job-listing-title">{{item.title |truncate(100) }}</h3>
         </div>
       </div>
 
@@ -22,39 +25,40 @@
         </div>
 
         <ul>
-					  <li>
-                <i class="icon-material-outline-business"></i> Hasc Center
-                <!-- <div
+          <li>
+            <i class="icon-material-outline-business"></i>
+            {{item.mainCategoryName | truncate(15)}}
+            <!-- <div
                   class="verified-badge"
                   data-tippy-placement="top"
                   data-tippy
                   data-original-title="Verified Employer"
-                ></div>-->
-              </li>
-          <li>
-            <i class="icon-material-outline-location-on"></i> Brooklyn
+            ></div>-->
           </li>
           <li>
-            <i class="icon-material-outline-access-time"></i> 2 days ago
+            <i class="icon-material-outline-location-on"></i>
+            {{item.cityName=="Other"? item.stateName : item.cityName}}
+          </li>
+          <li>
+            <i class="icon-material-outline-access-time"></i>
+            {{item.date | formatDate}}
           </li>
         </ul>
       </div>
     </a>
- 
-   
   </div>
 </template>
 
 
 
 <script>
+import { mapGetters, mapState } from "vuex";
 export default {
   name: "PremiumJobs",
-  props: {
-    jobs: {
-      type: Array,
-      required: true
-    }
+  computed: {
+    ...mapGetters({
+      premiumJobs: "jobs/premiumJobs"
+    })
   }
 };
 </script>
