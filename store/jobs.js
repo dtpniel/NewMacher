@@ -399,8 +399,8 @@ export const actions = {
     metaTags.description = "Search here for thousands of jewish jobs - "
       + description + location +
       " and more on Macher, the largest jewish classifieds website";
-    metaTags.socialTitle = title + "Jobs";
-    metaTags.socialDescription = description + "Jobs";
+    metaTags.socialTitle = title + " Jobs";
+    metaTags.socialDescription = description + " Jobs";
     metaTags.canonical = canonical;
 
     metaTags.categoryName = title;

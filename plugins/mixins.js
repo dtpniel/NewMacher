@@ -26,51 +26,51 @@ Vue.mixin({
     createMetaTags(metaTags) {
       var metaTags =
         [
+          // {
+          //   hid: "description",
+          //   name: "description",
+          //   content: metaTags.description
+          // },
           {
-            hid: "description",
-            name: "description",
-            content: metaTags.description
-          },
-          {
-            hid: "og:title",
+            vmid: "og:title",
             property: "og:title",
             content: metaTags.socialTitle
           },
           {
-            hid: "og:description",
+            vmid: "og:description",
             property: "og:description",
             content: metaTags.socialDescription
           },
           {
-            hid: "og:url",
+            vmid: "og:url",
             property: "og:url",
             content: metaTags.canonical
           },
           ,
           {
-            hid: "og:site_name",
+            vmid: "og:site_name",
             property: "og:site_name",
             content: metaTags.siteName
           },
           {
-            hid: "twitter:card",
+            vmid: "twitter:card",
             name: "twitter:card",
             content: metaTags.title
           },
           {
-            hid: "twitter:site",
+            vmid: "twitter:site",
             name: "twitter:site",
             content: metaTags.twitter
           },
           {
-            hid: "twitter:creator",
+            vmid: "twitter:creator",
             name: "twitter:creator",
             content: metaTags.twitter
           },
           { itemprop: 'name', content: metaTags.title },
           { itemprop: 'description', content: metaTags.description }
         ];
-      return metaTags[0];
+      return metaTags;
     }
   }
 })

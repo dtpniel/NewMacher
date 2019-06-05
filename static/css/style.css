@@ -4766,7 +4766,8 @@ span.blog-item-tag {
 	border-radius: 4px;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
 	margin-bottom: 35px;
-	background-color: #fff;
+	/* Diti */
+	/* background-color: #fff; */
 	transition: 0.3s;
 	position: relative;
 }
@@ -4898,9 +4899,11 @@ span.blog-item-tag {
 	line-height: 28px;
 }
 
-.compact-list-layout .job-listing:nth-child(2n) {
+/* diti */
+
+/* .compact-list-layout .job-listing:nth-child(2n) {
 	background-color: #fafafa;
-}
+} */
 
 .compact-list-layout .job-listing:before {
 	content: "";
@@ -18282,4 +18285,17 @@ div.main-jobs {
 
 .job-banner .job-listing-details {
 	background: #ffe9e9;
+}
+
+.compact-list-layout .job-listing-container:nth-child(2n) {
+	background-color: #fafafa;
+}
+
+.compact-list-layout .job-listing-container {
+	background-color: #ffffff;
+}
+
+h4.page-number {
+	font-weight: bold;
+	padding: 15px;
 }

@@ -57,7 +57,7 @@ export default {
     return {
       title: this.metaTags.title,
       link: [{ rel: "canonical", href: this.metaTags.canonical }],
-      meta: [this.createMetaTags(this.metaTags)]
+      meta: this.createMetaTags(this.metaTags)
     };
   }
 };

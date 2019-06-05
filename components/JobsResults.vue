@@ -5,84 +5,45 @@
       class="alert alert-danger"
       role="alert"
     >No results match your search criteria</div>
-
-    <!-- Job Listing -->
-    <a
-      v-for="(item,index) in jobs"
-      :key="item.id"
-      :href="'single-job-page.html?id=' + item.id"
-      class="job-listing"
-       :class="{  'job-listing-mobile' :isMobile}"
-    >
-      <!-- <a href="single-job-page.html" class="job-listing"> -->
-      <!-- Job Listing Details -->
-         <h3 v-if="((index)%perPage)==0||index==0" style="font-weight:bold" class="margin-bottom-20">
+    <div class="job-listing-container" v-for="(item,index) in jobs" :key="item.id">
+      <h4 v-if="((index)%perPage)==0||index==0" class="page-number">
         <span class="icon-feather-arrow-right"></span>
         Page {{Math.floor((index+1)/perPage)+1}}
-      </h3>
+      </h4>
 
-      <div class="job-listing-details">
-        <!-- Logo -->
-        <div class="job-listing-company-logo">
-          <img src="images/centers.png" alt>
-         <!-- <img src="images/company-logo-05.png" alt>  -->
-        </div>
-
-        <!-- Details -->
-        <div class="job-listing-description">
-          <h3 class="job-listing-title">{{item.title | truncate(200)}}</h3>
-
-          <!-- Job Listing Footer -->
-          <div class="job-listing-footer">
-            <ul>
-              <li>
-                <i class="icon-material-outline-business"></i> Centers Health Care
-                <!-- <div
-                  class="verified-badge"
-                  data-tippy-placement="top"
-                  data-tippy
-                  data-original-title="Verified Employer"
-                ></div>-->
-              </li>
-              <li>
-                <i class="icon-material-outline-location-on"></i>
-                {{item.cityName=="Other"? item.stateName : item.cityName}}
-              </li>
-              <li>
-                <i class="icon-material-outline-business-center"></i>
-                {{item.partTime==1?"Part Time" : "Full Time"}}
-              </li>
-              <li>
-                <i class="icon-material-outline-access-time"></i>
-                {{item.date | formatDate}}
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Bookmark -->
-        <span class="bookmark-icon"></span>
-      </div>
-    </a>
+      <!-- Job Listing -->
+      <result-item :item="item"/>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+import ResultItem from "~/components/ResultItem";
 
 export default {
   name: "JobsResults",
+  components: { ResultItem },
+  data: function() {
+    return {
+      selectedId: 0
+    };
+  },
   computed: {
     ...mapGetters({
-       jobs: "jobs/filteredJobsSliced",
+      jobs: "jobs/filteredJobsSliced",
       sum: "jobs/sum",
       perPage: "jobs/perPage",
       isMobile: "isMobile"
     })
   },
-    methods: {
+  methods: {
     page: function(index) {
       return this.sum % this.perPage;
+    },
+    viewMore: function(id) {
+      this.selectedId = id;
+      return false;
     }
   }
 };
