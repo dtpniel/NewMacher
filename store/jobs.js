@@ -16,6 +16,7 @@ var dataIndex = {
 
 export const state = () => ({
   jobs: [],
+  singleJob: {},
   premiumJobs: [],
   filter: {
     stateId: 0,
@@ -143,6 +144,9 @@ export const mutations = {
   setJobs(state, data) {
     state.jobs = data;
   },
+  setSingleJob(state, data) {
+    state.singleJob = data;
+  },
 
   setStateData(state, data) {
     state.stateIdData = data;
@@ -179,7 +183,7 @@ export const mutations = {
   resetFilter(state) {
     Object.assign(state.filter, state.filterDefault);
   },
-  
+
   setcurrentPage(state, currentPage) {
     state.currentPage = currentPage;
   },
@@ -226,42 +230,43 @@ export const getters = {
   },
   filteredJobsSliced: (state, getters) => {
     return getters.filteredJobs.slice(state.filter.start, state.perPage * state.currentPage);
-    },
-    premiumJobs: state => {
-      var filter = state.filter;
-      let jobs = [];
-      let premiumJobs = [];
-  
-      Object.assign(jobs, state.premiumJobs);
-      jobs.sort(function () { return 0.5 - Math.random() });
-  
-      //try to find 3 jobs from the main category
-      premiumJobs = jobs
-        .filter(x => {
-          return (
-            filter.mainCategoryId == 0 ||
-            filter.mainCategoryId == x.mainCategoryId
-          );
-        })
-  
-      //if there are not enough, combine it with other premium ads
-      if (premiumJobs.length < 3) {
-        if (premiumJobs.length > 0)
-          premiumJobs.push(...jobs);
-        else
-          premiumJobs = jobs;
-      }
-  
-      return premiumJobs.slice(0, 3);
-    },
-  
+  },
+  premiumJobs: state => {
+    var filter = state.filter;
+    let jobs = [];
+    let premiumJobs = [];
+
+    Object.assign(jobs, state.premiumJobs);
+    jobs.sort(function () { return 0.5 - Math.random() });
+
+    //try to find 3 jobs from the main category
+    premiumJobs = jobs
+      .filter(x => {
+        return (
+          filter.mainCategoryId == 0 ||
+          filter.mainCategoryId == x.mainCategoryId
+        );
+      })
+
+    //if there are not enough, combine it with other premium ads
+    if (premiumJobs.length < 3) {
+      if (premiumJobs.length > 0)
+        premiumJobs.push(...jobs);
+      else
+        premiumJobs = jobs;
+    }
+
+    return premiumJobs.slice(0, 3);
+  },
+
   getFilter: state => {
     return getField(state.filter)
   },
   sum: (state, getters) => { return getters.filteredJobs.length },
   currentPage: state => { return state.currentPage },
   perPage: state => { return state.perPage },
-  metaTags: state => { return state.metaTags }
+  metaTags: state => { return state.metaTags },
+  singleJob: state => { return state.singleJob }
 };
 
 
@@ -315,14 +320,34 @@ export const actions = {
         commit("setMainCategoryData", data[dataIndex.mainCategories]);
         commit("setCategoryData", data[dataIndex.categories]);
         commit("setpremiumJobs", data[dataIndex.premiumJobs]);
-        dispatch("setMetaTags", { data: data, route: route });
+        dispatch("setMetaTags", data);
+        //dispatch("setMetaTags", { data: data, route: route });
       }
       )
   },
 
-  setMetaTags({ commit }, data) {
-    var route = data.route;
-    var data = data.data;
+
+  async getSingleJob({ commit, dispatch }, data) {
+    return axios.post(process.env.baseApi + "/singleJob", data)
+      .then(singleJob => {
+        if (!singleJob.data)
+          return;
+        var data = singleJob.data.data.recordset;
+        if (!data.length)
+          return;
+
+        commit("setSingleJob", data[0]);
+        dispatch("setMetaTagsSingle", data);
+
+        // commit("setStateData", data[dataIndex.states]);
+        //dispatch("setMetaTags", { data: data, route: route });
+      }
+      )
+  },
+
+  setMetaTagsSingle({ commit }, data) {
+
+    var data = data[0];
 
     var breadcrumbs = [{
       name: "Home",
@@ -334,7 +359,56 @@ export const actions = {
       description: "",
       socialTitle: "",
       socialDescription: "",
-       canonical: "",
+      canonical: "",
+      categoryName: "",
+      location: ""
+    };
+
+    var title;
+    var description;
+    var qstring1, qstring2, qstring3;
+    var canonical = "";
+
+    //grap the information from db result
+
+    qstring1 = data.mainCategoryQstring;
+    breadcrumbs.push({ name: title, url: "/" + qstring1 })
+
+    qstring2 = data.categoryQstring;
+    breadcrumbs.push({ name: title, url: "/" + qstring1 + "/" + qstring2 })
+
+    qstring3 = "item/" + data.id
+    breadcrumbs.push({ name: title, url: "/" + qstring1 + "/" + qstring2 + "/" + qstring3 })
+
+    //create canonical by params
+    canonical = process.env.baseUrl + breadcrumbs[breadcrumbs.length - 1].url;
+
+
+    title = data.title;
+    description = data.description.substring(0, 200);
+
+    //final: set the tags
+    metaTags.title = "Macher Jewish Jobs - " + title;
+    metaTags.description = "Macher Jewish Jobs - " + description;
+    metaTags.socialTitle = title;
+    metaTags.socialDescription = description;
+    metaTags.canonical = canonical;
+    commit("setMetaTags", metaTags);
+  },
+
+  setMetaTags({ commit }, data) {
+
+    var breadcrumbs = [{
+      name: "Home",
+      url: "/"
+    }];
+
+    var metaTags = {
+      title: "",
+      description: "",
+      socialTitle: "",
+      socialDescription: "",
+      canonical: "",
       categoryName: "",
       location: ""
     };

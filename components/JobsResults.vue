@@ -1,5 +1,8 @@
 <template>
-  <div class="listings-container compact-list-layout margin-top-15 margin-bottom-35">
+  <div
+    class="listings-container compact-list-layout margin-top-15 margin-bottom-35"
+    :class="{'compact-list-layout-mobile' :isMobile}"
+  >
     <div
       v-if="!jobs.length"
       class="alert alert-danger"

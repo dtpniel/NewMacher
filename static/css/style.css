@@ -314,7 +314,7 @@ header.fullwidth .container {
 /* Boxed Styles*/
 
 #header .container {
-	position: relative;
+	/* position: relative; */
 }
 
 #header .left-side {
@@ -18298,4 +18298,8 @@ div.main-jobs {
 h4.page-number {
 	font-weight: bold;
 	padding: 15px;
+}
+
+.compact-list-layout-mobile .job-listing {
+	padding: 10px 10px 20px 20px
 }

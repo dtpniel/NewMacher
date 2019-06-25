@@ -33,13 +33,15 @@ export default {
           {
             hid: "twitter:card",
             name: "twitter:card",
-            content: this.meta.title
+            content: this.meta.socialTitle
           },
+          
           {
             hid: "twitter:site",
             name: "twitter:site",
             content: this.meta.twitter
           },
+
           {
             hid: "twitter:creator",
             name: "twitter:creator",

@@ -48,16 +48,6 @@ app.post('/jobsMobile', function (req, res) {
   )
 });
 
-app.post('/states', function (req, res) {
-
-  // query to the database and get the data
-  db.execProcedure('getStates').then(data => {
-    res.send(data)
-  },
-    error => console.log(error)
-  )
-});
-
 app.post('/jobsQueryString', function (req, res) {
   // var userInput = [];
   var qstring = req.body["qstring"];
@@ -70,6 +60,19 @@ app.post('/jobsQueryString', function (req, res) {
   )
 });
 
+app.post('/singleJob', function (req, res) {
+  // var userInput = [];
+  var params = req.body["jobParams"];
+
+  // query to the database and get the data
+  db.execProcedure('getSingleJob', params).then(data => {
+    res.send(data)
+  },
+    error => console.log(error)
+  )
+});
+
+
 app.post('/states', function (req, res) {
 
   // query to the database and get the data
@@ -79,6 +82,7 @@ app.post('/states', function (req, res) {
     error => console.log(error)
   )
 });
+
 
 
 

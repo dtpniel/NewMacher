@@ -2,7 +2,11 @@
   <div>
     <!-- Titlebar
     ==================================================-->
-    <div class="single-page-header" v-if="false" data-background-image="images/single-job.jpg">
+    <div
+      class="single-page-header"
+      v-if="!itemResult.title"
+      data-background-image="images/single-job.jpg"
+    >
       <div class="container">
         <div class="row">
           <div class="col-md-12">
@@ -166,8 +170,25 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from "vuex";
 export default {
   name: "SingleJob",
-  props: ["item"]
+  props: {
+    itemResult: {
+      default: function() {
+        return {};
+      }
+    }
+  },
+  computed: {
+    ...mapGetters({
+      item: "jobs/singleJob"
+    })
+  },
+  created() {
+    if (this.itemResult) {
+      Object.assign(this.item, this.itemResult);
+    }
+  }
 };
 </script>

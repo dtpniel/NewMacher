@@ -2,10 +2,9 @@
   <div>
     <!-- Job Listing -->
     <a
-      :href="'single-job-page.html?id=' + item.id"
+      :href="$route.fullPath +'/item/' +item.id"
       class="job-listing"
-      :class="{  'job-listing-mobile' :isMobile}"
-      @click.prevent="showItem=!showItem"
+      @click.prevent="openItem($event)"
     >
       <!-- <a href="single-job-page.html" class="job-listing"> -->
       <!-- Job Listing Details -->
@@ -46,7 +45,7 @@
                 {{item.date | formatDate}}
               </li>
               <li>
-                <mark> 
+                <mark>
                   View {{showItem?"Less":"More"}}
                   <i class="icon-feather-arrow-right"></i>
                 </mark>
@@ -61,7 +60,7 @@
     </a>
 
     <transition name="fade">
-      <single-job :item="item" v-if="showItem"/>
+      <single-job :itemResult="item" v-if="showItem" @click="openItem(item)"/>
     </transition>
   </div>
 </template>
@@ -81,6 +80,17 @@ export default {
     ...mapGetters({
       isMobile: "isMobile"
     })
+  },
+  methods: {
+    openItem: function(item) {
+      if (this.isMobile) {
+        var element = event.currentTarget;
+        var href = element.getAttribute("href");
+        this.$router.push(href);
+        return;
+      }
+      this.showItem = !this.showItem;
+    }
   }
 };
 </script>
