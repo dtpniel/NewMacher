@@ -14,7 +14,9 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@nuxtjs/auth": "^4.8.1",
     "@nuxtjs/axios": "^5.0.0",
+    "@nuxtjs/toast": "^3.2.1",
     "@ttskch/select2-bootstrap4-theme": "^1.0.5",
     "@types/select2": "^4.0.47",
     "body-parser": "^1.18.3",

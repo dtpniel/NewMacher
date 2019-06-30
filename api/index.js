@@ -118,6 +118,30 @@ app.post('/categories', function (req, res) {
   )
 });
 
+app.post('/register', function (req, res) {
+  var user = req.body["user"];
+
+  // query to the database and get the data
+  db.execProcedure('register', user).then(data => {
+    res.send(data)
+  },
+    error => console.log(error)
+  )
+});
+
+app.post('/login', function (req, res) {
+  var user = req.body["user"];
+
+  // query to the database and get the data
+  db.execProcedure('login', user).then(data => {
+    res.send(data)
+  },
+    error => console.log(error)
+  )
+});
+
+
+
 
 // export the server middleware
 module.exports = {

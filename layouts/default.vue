@@ -216,7 +216,7 @@
           <!-- Left Side Content / End -->
 
           <!-- Right Side Content / End -->
-          <div class="right-side">
+          <div class="right-side" v-if="isAuthenticated">
             <!--  User Notifications -->
             <div class="header-widget hide-on-mobile">
               <!-- Notifications -->
@@ -457,6 +457,27 @@
               </button>
             </span>
           </div>
+
+          <!-- Right Side Content / End -->
+          <div class="right-side" v-if="!isAuthenticated">
+            <div class="header-widget">
+              <a href="login" class="popup-with-zoom-anim log-in-button">
+                <i class="icon-feather-log-in"></i>
+                <span>Log In / Register</span>
+              </a>
+            </div>
+
+            <!-- Mobile Navigation Button -->
+            <span class="mmenu-trigger">
+              <button class="hamburger hamburger--collapse" type="button">
+                <span class="hamburger-box">
+                  <span class="hamburger-inner"></span>
+                </span>
+              </button>
+            </span>
+          </div>
+          <!-- Right Side Content / End -->
+
           <!-- Right Side Content / End -->
         </div>
       </div>
@@ -467,7 +488,7 @@
 
     <!-- Page Content
     ==================================================-->
-   <search v-if="!isHomePage()"/>
+    <search v-if="!isHomePage()"/>
     <top-banners v-if="!isHomePage() && !$store.getters.isMobile"/>
     <nuxt/>
 
@@ -708,10 +729,14 @@
 <script>
 import TopBanners from "~/components/TopBanners";
 import Search from "~/components/Search";
+import { mapGetters } from "vuex";
 export default {
   components: {
     TopBanners,
     Search
+  },
+  computed: {
+    ...mapGetters(["isAuthenticated", "loggedInUser"])
   }
 };
 </script>

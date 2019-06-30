@@ -18,6 +18,13 @@ export const getters = {
                 return false;
         }
         else return state.isMobile;
+    },
+    isAuthenticated(state) {
+        return state.auth.loggedIn
+    },
+
+    loggedInUser(state) {
+        return state.auth.user
     }
 }
 export const actions = {
