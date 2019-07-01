@@ -106,7 +106,7 @@ module.exports = {
     '@nuxtjs/auth',
     // Doc: https://bootstrap-vue.js.org/docs/
     ['bootstrap-vue/nuxt', { css: false }],
-    '@nuxtjs/toast',
+    '@nuxtjs/toast'
 
   ],
   serverMiddleware: ['~/api/index.js'],

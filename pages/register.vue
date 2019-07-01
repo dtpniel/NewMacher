@@ -1,10 +1,10 @@
 <template>
   <div>
-  <!-- //  <register/> -->
+  //  <register/>
   </div>
 </template>
 <script>
-//import Register from "~/components/Register.vue";
+import Register from "~/components/Register.vue";
 
 export default {
   data: function() {
@@ -12,6 +12,6 @@ export default {
       title: "Macher Register"
     };
   },
- // components: { Register }
+ components: { Register }
 };
 </script>
