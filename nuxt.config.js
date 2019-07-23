@@ -9,20 +9,33 @@ module.exports = {
   },
   router: {
     base: '/',
-    prefetchLinks: true
+   // prefetchLinks: true
 
   },
 
 
+  // auth: {
+  //   strategies: {
+  //     local: {
+  //       endpoints: {
+  //         login: { url: 'login', method: 'post', propertyName: 'data.token' },
+  //         user: { url: 'me', method: 'get', propertyName: 'data' },
+  //         logout: false
+  //       }
+  //     }
+  //   }
+  // },
+
   auth: {
     strategies: {
-      local: {
-        endpoints: {
-          login: { url: 'login', method: 'post', propertyName: 'data.token' },
-          user: { url: 'me', method: 'get', propertyName: 'data' },
-          logout: false
-        }
-      }
+      local:false
+      // local: {
+      //   endpoints: {
+      //     login: { url: 'login', method: 'post', propertyName: 'data.token' },
+      //     user: { url: 'me', method: 'get', propertyName: 'data' },
+      //     logout: false
+      //   }
+      // }
     }
   },
 
@@ -103,7 +116,7 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
-    '@nuxtjs/auth',
+  //  '@nuxtjs/auth',
     // Doc: https://bootstrap-vue.js.org/docs/
     ['bootstrap-vue/nuxt', { css: false }],
     '@nuxtjs/toast'

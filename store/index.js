@@ -20,7 +20,8 @@ export const getters = {
         else return state.isMobile;
     },
     isAuthenticated(state) {
-        return state.auth.loggedIn
+      //  return state.auth.loggedIn
+      return true;
     },
 
     loggedInUser(state) {
